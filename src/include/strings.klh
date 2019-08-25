@@ -28,6 +28,13 @@ ROUTINE r_to_s(r : REAL)                  : STRING FROM strings
 -- X: 1.1 Y: 2.2 Z: 3.3
 -- W: 4.4 P: 5.5 R: 6.6
 ROUTINE p_to_s(p : XYZWPR)                : STRING FROM strings
+--print out a XYZWPREXT data type
+-- GP1:
+-- UF : 1, UT : 2,  CONFIG : 'F U T, 0, 0, 0',
+-- X = 1.0 mm, Y = 2.0 mm, Z = 3.0 mm,
+-- W = 90.0 deg, P = 90.0 deg, R = 180.0 deg
+ROUTINE pext_to_s(p : XYZWPREXT; grp_no : INTEGER; uframe_no : INTEGER; & 
+                  utool_no : INTEGER) : STRING FROM strings
 -- Escapes quotes in a string
 ROUTINE esc_quotes(s : STRING)            : STRING FROM strings
 -- searches for a string "srchStr" within another 

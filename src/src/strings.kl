@@ -138,6 +138,54 @@ ROUTINE p_to_s
       + 'W: ' + r_to_s(p.w) + ' P: ' + r_to_s(p.p) + ' R: ' + r_to_s(p.r))
    END p_to_s
 
+-- print xyzwprext data type
+ROUTINE pext_to_s
+VAR
+    configvar : CONFIG
+    wrist, elbow, robot : STRING[1]
+BEGIN
+    IF (UNINIT(uframe_no)) OR (UNINIT(utool_no)) THEN
+      WRITE TPERROR('frame number must be set.')
+    ENDIF
+    configvar = p.config_data
+    --joint placement
+    -- wrist
+    IF (configvar.cfg_flip) THEN
+        wrist = 'F'
+    ELSE
+        wrist = 'N'
+    ENDIF
+    -- elbow
+    IF (configvar.cfg_up) THEN
+        elbow = 'U'
+    ELSE
+        elbow = 'D'
+    ENDIF
+    -- robot
+    IF (configvar.cfg_front) THEN
+        robot = 'T'
+    ELSE
+        robot = 'B'
+    ENDIF
+
+    IF (UNINIT(grp_no)) OR (grp_no <= 0) THEN
+        RETURN('UF : '+ i_to_s(uframe_no) +', UT : '+ i_to_s(utool_no) +',' & 
+            + '  CONFIG : '+ wrist + chr(32) + elbow + chr(32) + robot + ',' &
+            + i_to_s((configvar.cfg_turn_no1)) + ',' + i_to_s((configvar.cfg_turn_no2)) &
+            + i_to_s((configvar.cfg_turn_no3)) + ', ' + chr(13) &
+            + 'X = '+ r_to_s(p.x) +'mm, Y = '+ r_to_s(p.y) + 'mm, Z = '+ r_to_s(p.z) +'mm, '+ chr(13) &
+            + 'W = '+ r_to_s(p.w) +'deg, P ='+ r_to_s(p.p) +'deg, R ='+ r_to_s(p.r) +'deg')
+    ELSE
+        RETURN('GP' + i_to_s(grp_no) + ':' + chr(13) &
+            + 'UF : '+ i_to_s(uframe_no) +', UT : '+ i_to_s(utool_no) +',' & 
+            + '  CONFIG : '+ wrist + chr(32) + elbow + chr(32) + robot + ',' &
+            + i_to_s((configvar.cfg_turn_no1)) + ',' + i_to_s((configvar.cfg_turn_no2)) &
+            + i_to_s((configvar.cfg_turn_no3)) + ', ' + chr(13) &
+            + 'X = '+ r_to_s(p.x) +'mm, Y = '+ r_to_s(p.y) + 'mm, Z = '+ r_to_s(p.z) +'mm, '+ chr(13) &
+            + 'W = '+ r_to_s(p.w) +'deg, P ='+ r_to_s(p.p) +'deg, R ='+ r_to_s(p.r) +'deg')
+    ENDIF
+END pext_to_s
+
 -- Escapes quotes in a string
 ROUTINE esc_quotes
   VAR
