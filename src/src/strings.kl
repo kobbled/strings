@@ -1,6 +1,11 @@
 PROGRAM strings
 %NOLOCKGROUP
 
+%INCLUDE strings.klh
+
+BEGIN
+END strings
+
 -- Public: Takes a string and a separator and splits it into an array
 --
 -- str : STRING - the STRING to separate
@@ -12,7 +17,7 @@ PROGRAM strings
 --   # => ['one','two','three','','',...,'']
 --
 -- Returns an ARRAY[16] of STRING[16]
-ROUTINE split_str(str:STRING; sep:STRING; out:ARRAY[*] OF STRING)
+ROUTINE split_str
   VAR
     i   : INTEGER
     k   : INTEGER
@@ -39,7 +44,7 @@ ROUTINE split_str(str:STRING; sep:STRING; out:ARRAY[*] OF STRING)
   END split_str
 
 -- strip whitespace from left side of string
-ROUTINE lstrip(s : STRING) : STRING
+ROUTINE lstrip
   VAR
     i : INTEGER
   BEGIN
@@ -53,7 +58,7 @@ ROUTINE lstrip(s : STRING) : STRING
   END lstrip
 
 -- strip whitespace from right side of string
-ROUTINE rstrip(s : STRING) : STRING
+ROUTINE rstrip
   VAR
     i : INTEGER
   BEGIN
@@ -66,7 +71,7 @@ ROUTINE rstrip(s : STRING) : STRING
     RETURN(s)
   END rstrip
 
-ROUTINE b_to_s(b : BOOLEAN) : STRING
+ROUTINE b_to_s
   BEGIN
     IF b THEN
       RETURN('true')
@@ -75,7 +80,7 @@ ROUTINE b_to_s(b : BOOLEAN) : STRING
     ENDIF
   END b_to_s
 
-ROUTINE i_to_s(i : INTEGER) : STRING
+ROUTINE i_to_s
   VAR
     s : STRING[16]
   BEGIN
@@ -87,7 +92,7 @@ ROUTINE i_to_s(i : INTEGER) : STRING
     RETURN(lstrip(s)) 
   END i_to_s
 
-ROUTINE r_to_s(r : REAL) : STRING
+ROUTINE r_to_s
   VAR
     s : STRING[16]
     i : INTEGER
@@ -127,14 +132,14 @@ ROUTINE r_to_s(r : REAL) : STRING
     RETURN(s)
   END r_to_s
 
-ROUTINE p_to_s(p : XYZWPR) : STRING
+ROUTINE p_to_s
   BEGIN
     RETURN('X: ' + r_to_s(p.x) + ' Y: ' + r_to_s(p.y) + ' Z: ' + r_to_s(p.z) + chr(13) &
       + 'W: ' + r_to_s(p.w) + ' P: ' + r_to_s(p.p) + ' R: ' + r_to_s(p.r))
    END p_to_s
 
 -- Escapes quotes in a string
-ROUTINE esc_quotes(s : STRING) : STRING
+ROUTINE esc_quotes
   VAR
     i : INTEGER
     r : STRING[254]
@@ -154,5 +159,82 @@ ROUTINE esc_quotes(s : STRING) : STRING
     RETURN(r)
   END esc_quotes
 
-BEGIN
-END strings
+-- searches for a string "srchStr" within another 
+-- longer string "str"
+-- need to handle error catching
+-- return a boolean if found of not
+ROUTINE search_str
+  VAR
+  	strLen  : INTEGER
+  	srchLen : INTEGER
+  	dmmy    : STRING[30]
+ 	found   : BOOLEAN
+  	i       : INTEGER
+  BEGIN
+  	strLen = STR_LEN(str)
+  	srchLen = STR_LEN(srchStr)
+  	found = FALSE
+  
+  	FOR i=1 TO strLen DO
+    		dmmy = SUB_STR(str,i,srchLen)
+    		IF (dmmy = srchStr) THEN
+     		 	found = TRUE
+      			GOTO searched
+   	 	ENDIF
+  	ENDFOR
+	SEARCHED::
+	
+	RETURN(found)
+  END search_str
+
+-- Determine if character is a number. A character of 
+-- String[1] is evaluated to see if its a number. 
+  ROUTINE charisnum
+  VAR
+    isnum : BOOLEAN
+  BEGIN
+  	isnum = FALSE
+  	IF STR_LEN(s) <= 1 THEN
+  		IF (s='0') OR (s='1') OR (s='2') OR  (s='3') OR (s= '4') OR (s='5') OR (s='6') OR (s='7') OR (s='8') OR (s='9') THEN
+  			isnum = TRUE
+  		ENDIF
+  	ELSE
+      CLR_IO_STAT(TPDISPLAY)
+      WRITE TPERROR(s, ' is not a character')
+  	ENDIF
+  	RETURN(isnum)
+  END charisnum
+
+    -- string to integer
+  ROUTINE s_to_i
+   VAR
+   	int : INTEGER
+   	i : INTEGER
+   	isNum : BOOLEAN
+  BEGIN
+  	isNum = FALSE
+  	-- evaluate if string is a number
+  	IF SUB_STR(s,1,1) = '-' THEN
+  		int = -1
+  		 IF charisnum(SUB_STR(s,2,1)) THEN
+  		 	isNum = TRUE
+  		 ENDIF
+  	ELSE
+  		IF charisnum(SUB_STR(s,1,1)) THEN
+  			isNum = TRUE
+  		ENDIF
+  	ENDIF
+  	--If not a number abort
+  	IF isNum = FALSE THEN
+      WRITE TPERROR(s, ' is not a number')
+  	ENDIF
+  	
+  	CNV_STR_INT(s, int)
+  	
+  	IF UNINIT(int) THEN
+      WRITE TPERROR(s, ' is not a integer')
+  	ENDIF
+  	
+  	RETURN(int)
+  	
+  END s_to_i  

@@ -1,0 +1,41 @@
+%ifndef strings_h
+%define strings_h
+
+
+--  split_str: Takes a string and a separator and splits it into an array
+-----------------
+-- str : STRING - the STRING to separate
+-- sep : STRING - which character separates the string
+--
+-- Examples:
+--   split_str('one,two,three',',')
+--   # => ['one','two','three','','',...,'']
+-- Returns:  an ARRAY[16] of STRING[16]
+ROUTINE split_str(str:STRING; sep:STRING; out:ARRAY[*] OF STRING) FROM strings
+
+-- strip whitespace from left side of string
+ROUTINE lstrip(s : STRING)                : STRING FROM strings
+-- strip whitespace from right side of string
+ROUTINE rstrip(s : STRING)                : STRING FROM strings
+--converts a boolean value into string
+ROUTINE b_to_s(b : BOOLEAN)               : STRING FROM strings
+--converts an integer value into string
+ROUTINE i_to_s(i : INTEGER)               : STRING FROM strings
+--converts a real number to a string
+ROUTINE r_to_s(r : REAL)                  : STRING FROM strings
+-- converts a position to a string
+-- eg.)
+-- X: 1.1 Y: 2.2 Z: 3.3
+-- W: 4.4 P: 5.5 R: 6.6
+ROUTINE p_to_s(p : XYZWPR)                : STRING FROM strings
+-- Escapes quotes in a string
+ROUTINE esc_quotes(s : STRING)            : STRING FROM strings
+-- searches for a string "srchStr" within another 
+-- longer string "str"
+ROUTINE search_str(str: STRING; srchStr : STRING) : BOOLEAN FROM strings
+--Determine if character is a number
+ROUTINE charisnum(s : STRING)               : BOOLEAN FROM strings
+--convert a string to an integer
+ROUTINE s_to_i(s : STRING) 			        : INTEGER FROM strings
+
+%endif --strings_h

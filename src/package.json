@@ -1,0 +1,20 @@
+{
+  "manver" : "1",
+  "project" : "Strings",
+  "description" : "",
+  "version" : "0.0.1",
+  "license" : "MIT",
+  "author" : "onerobotics",
+  "source" : [
+    "src/strings.kl"
+  ],
+  "tests" : [
+    "src/test/test_strings.kl"
+  ],
+  "includes" : [
+    "include"
+  ],
+  "depends" : [
+    "KUnit"
+  ]
+}

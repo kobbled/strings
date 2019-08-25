@@ -1,8 +1,8 @@
 PROGRAM test_strings
 %NOLOCKGROUP
 
-%INCLUDE includes/vendor/kunit.h
-%INCLUDE includes/strings.h
+%INCLUDE kunit.klh
+%INCLUDE strings.klh
 
 ROUTINE t_split_str : BOOLEAN
   VAR

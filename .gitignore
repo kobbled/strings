@@ -2,5 +2,4 @@ bin/*.pc
 *.swp
 *.pc
 robot.ini
-src/includes/vendor/
-vendor/
+build/
