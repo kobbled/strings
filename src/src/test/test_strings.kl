@@ -18,6 +18,15 @@ ROUTINE t_split_str : BOOLEAN
       kunit_eq_str('',o[4]))
   END t_split_str
 
+ROUTINE t_char_cnt : BOOLEAN
+  BEGIN
+    RETURN(kunit_eq_int(4, char_count('one,two,three,four,', ',')) AND
+          kunit_eq_int(4,char_count('oneoneonetwoone', 'one')) AND
+          kunit_eq_int(13,char_count('....F......F...', '.')) AND
+          kunit_eq_int(2,char_count('....F......F...', 'F')) AND
+          kunit_eq_int(0,char_count('....F......F...', '*')))
+  END t_char_cnt
+
 ROUTINE t_lstrip : BOOLEAN
   BEGIN
     RETURN(kunit_eq_str('test', lstrip('    test')) AND
@@ -46,6 +55,7 @@ ROUTINE t_i_to_s : BOOLEAN
 ROUTINE t_r_to_s : BOOLEAN
   BEGIN
     RETURN(kunit_eq_str('3.14', r_to_s(3.14)) AND
+      kunit_eq_str('1.234', r_to_s(1.234)) AND
       kunit_eq_str('-3.14', r_to_s(-3.14)) AND
       kunit_eq_str('0.5', r_to_s(0.5)) AND
       kunit_eq_str('10.0', r_to_s(10.000)))
@@ -66,6 +76,56 @@ ROUTINE t_p_to_s : BOOLEAN
      + 'W: 4.4 P: 5.5 R: 6.6', p_to_s(p)))
   END t_p_to_s
 
+ROUTINE t_joint2str : BOOLEAN
+  VAR
+    pose : JOINTPOS6
+    arr : ARRAY[6] OF REAL
+    status : INTEGER
+    jointstr : STRING[50]
+  BEGIN
+    -- set jointpos type
+    arr[1] = 10.0
+    arr[2] = 30.0
+    arr[3] = 190.0
+    arr[4] = -90.0
+    arr[5] = 0.0
+    arr[6] = 180.0
+
+    CNV_REL_JPOS(arr, pose, status)
+    IF status <> 0 THEN
+      WRITE TPDISPLAY(CR, 'problem in t_joint2str converting array.')
+      RETURN(FALSE)
+    ENDIF
+
+    jointstr = joint_to_s(pose, ',')
+    RETURN(kunit_eq_str('10.0,30.0,190.0,-90.0,0.0,180.0', jointstr))
+
+  END t_joint2str
+
+ROUTINE t_str2joint : BOOLEAN
+  VAR
+    jointstr : STRING[50]
+    pose : JOINTPOS6
+    arr : ARRAY[6] OF REAL
+    status : INTEGER
+  BEGIN
+    jointstr = '10.0,30.0,190.0,-90.0,0.0,180.0'
+    pose = s_to_joint(jointstr, ',')
+    --convert to real array for validation
+    CNV_JPOS_REL(pose, arr, status)
+    IF (status <> 0) THEN
+      WRITE TPDISPLAY(CR, 'problem in t_str2joint converting jointpose.')
+      RETURN(FALSE)
+    ENDIF
+
+    RETURN(kunit_eq_r(10.0, arr[1]) AND kunit_eq_r(190.0, arr[3]) AND
+          kunit_eq_r(-90.0, arr[4]) AND kunit_eq_r(0.0, arr[5]))
+  END t_str2joint
+
+ROUTINE t_pose_conf : BOOLEAN
+  BEGIN
+  END t_pose_conf
+
 ROUTINE t_esc_quotes : BOOLEAN
   BEGIN
     RETURN(kunit_eq_str('\"test\"', esc_quotes('"test"')))
@@ -84,16 +144,65 @@ BEGIN
 	kunit_test('second=baz', kunit_eq_str('baz', o[2]))
 END t_splitStr
 
+ROUTINE t_search_str : BOOLEAN
+  VAR
+    in_str : STRING[40]
+  BEGIN
+    in_str = 'The quick brown fox jumps over the lazy dog.'
+    RETURN(search_str('quick brown', in_str) AND search_str('jumps', in_str) &
+           AND (NOT search_str('grumpy cat', in_str)))
+  END t_search_str
+
+ROUTINE t_num_char : BOOLEAN
+  BEGIN
+    RETURN(charisnum('1') AND charisnum('9') AND charisnum('3') AND NOT charisnum('b'))
+  END t_num_char
+
+ROUTINE t_str2int : BOOLEAN
+  BEGIN
+    RETURN(kunit_eq_int(-3, s_to_i('-3')) AND kunit_eq_int(150, s_to_i('150')) &
+           AND kunit_eq_int(876524, s_to_i('876524')) AND kunit_eq_int(3, s_to_i('3.14')))
+  END t_str2int
+
+ROUTINE t_str2real : BOOLEAN
+  BEGIN
+    RETURN(kunit_eq_r(-3.14, s_to_r('-3.14')) AND kunit_eq_r(3.14, s_to_r('3.14')))
+  END t_str2real
+
+ROUTINE t_str2rarr : BOOLEAN
+  VAR
+    rstr : STRING[90]
+    r_arr : ARRAY[18] OF REAL
+    b : BOOLEAN
+  BEGIN
+    rstr = '3.21,1.09,5.5,6.00,1.111,8,2.718,3.14159,6.02,111.123'
+    rstr = rstr + ',-6.38,1E5,6.626E1,1.618,2,3,9.81,1.0'
+    s_to_r_arr(rstr, ',', r_arr)
+
+    RETURN(kunit_eq_r(3.21, r_arr[1]) AND kunit_eq_r(5.5, r_arr[3]) AND
+          kunit_eq_r(3.14159, r_arr[8]) AND kunit_eq_r(-6.38, r_arr[11]) AND
+          kunit_eq_r(6.626E1, r_arr[13]) AND kunit_eq_r(1.0, r_arr[18]))
+  END t_str2rarr
+
+
+
 BEGIN
   kunit_test('split_str()', t_split_str)
+  kunit_test('char_count()', t_char_cnt)
   kunit_test('lstrip()', t_lstrip)
   kunit_test('rstrip()', t_rstrip)
   kunit_test('b_to_s()', t_b_to_s)
   kunit_test('i_to_s()', t_i_to_s)
   kunit_test('r_to_s()', t_r_to_s)
   kunit_test('p_to_s()', t_p_to_s)
+  kunit_test('joint2str()',t_joint2str)
+  kunit_test('str2joint()',t_str2joint)
   kunit_test('esc_quotes()', t_esc_quotes)
+  kunit_test('search_str()',t_search_str)
+  kunit_test('number_char()',t_num_char)
+  kunit_test('str2int()',t_str2int)
+  kunit_test('str2real()',t_str2real)
+  kunit_test('real_array_from_str()',t_str2rarr)
 
-  t_splitStr
   kunit_done
 END test_strings

@@ -37,11 +37,30 @@ ROUTINE split_str
 			out[k] = SUB_STR(str, start, (i-start))
 			k = k + 1
 			start = i+STR_LEN(sep)
+      IF (k > array_len(out)-1) THEN
+        GO TO SKIP_SPLT
+      ENDIF
 		ENDIF
     ENDFOR
+    SKIP_SPLT::
 
 	out[k] = SUB_STR(str, start, (STR_LEN(str)-start+1))
   END split_str
+
+ROUTINE char_count
+  VAR
+    i   : INTEGER
+    count : INTEGER
+  BEGIN
+    count = 0
+    FOR i = 1 TO (STR_LEN(str)-STR_LEN(char)+1) DO
+      IF (SUB_STR(str, i, STR_LEN(char))=char) THEN
+        count = count + 1
+      ENDIF
+    ENDFOR
+
+    RETURN(count)
+  END char_count
 
 -- strip whitespace from left side of string
 ROUTINE lstrip
@@ -138,53 +157,89 @@ ROUTINE p_to_s
       + 'W: ' + r_to_s(p.w) + ' P: ' + r_to_s(p.p) + ' R: ' + r_to_s(p.r))
    END p_to_s
 
+ROUTINE joint_to_s
+  VAR
+    arr : ARRAY[9] OF REAL
+    status : INTEGER
+    i  : INTEGER
+    s : STRING[50]
+  BEGIN
+    -- sanity check deliminating character
+    IF STR_LEN(delim) > 1 THEN
+      -- applicable for chars ' :;,/'
+      IF NOT ((delim = ' ') OR (delim = ':') OR (delim = ';') & 
+               OR (delim = ',') OR (delim = '/')) THEN
+        CLR_IO_STAT(TPDISPLAY)
+        WRITE TPERROR(delim, 'is not a deliminating character. Check header.')
+      ENDIF
+  	ENDIF
+
+    --convert JPOS into a string
+    CNV_JPOS_REL(pose, arr, status)
+
+    --string joints together with delimiter seperator
+    s = ''
+    FOR i = 1 TO ARRAY_LEN(arr) DO
+      IF (NOT UNINIT(arr[i])) THEN
+        s = s + delim + r_to_s(arr[i])
+      ENDIF
+    ENDFOR
+
+    -- remove first delimiter
+    s = SUB_STR(s,2,STR_LEN(s))
+
+    RETURN(s)
+   END joint_to_s
+
+ROUTINE s_to_joint
+  VAR
+    r_joints : ARRAY[9] OF REAL
+    pose : JOINTPOS9
+    status : INTEGER
+    i : INTEGER
+  BEGIN
+    s_to_r_arr(s, delim, r_joints)
+    --set uninitialized data
+    FOR i=1 TO ARRAY_LEN(r_joints) DO
+      IF UNINIT(r_joints[i]) THEN
+        r_joints[i] = 0
+      ENDIF
+    ENDFOR
+    --convert to jointpos
+    CNV_REL_JPOS(r_joints, pose, status)
+    IF (STATUS <> 0) THEN
+      WRITE TPERROR('s_to_joint, jpos conversion failed.')
+    ENDIF
+
+    RETURN(pose)
+
+  END s_to_joint
+
+
 -- print xyzwprext data type
-ROUTINE pext_to_s
+ROUTINE p_to_s_conf
 VAR
-    configvar : CONFIG
-    wrist, elbow, robot : STRING[1]
-BEGIN
+    configstr : STRING[25]
+  BEGIN
     IF (UNINIT(uframe_no)) OR (UNINIT(utool_no)) THEN
       WRITE TPERROR('frame number must be set.')
     ENDIF
-    configvar = p.config_data
-    --joint placement
-    -- wrist
-    IF (configvar.cfg_flip) THEN
-        wrist = 'F'
-    ELSE
-        wrist = 'N'
-    ENDIF
-    -- elbow
-    IF (configvar.cfg_up) THEN
-        elbow = 'U'
-    ELSE
-        elbow = 'D'
-    ENDIF
-    -- robot
-    IF (configvar.cfg_front) THEN
-        robot = 'T'
-    ELSE
-        robot = 'B'
-    ENDIF
+    --convert config to string
+    CNV_CONF_STR(p.config_data, configstr)
 
     IF (UNINIT(grp_no)) OR (grp_no <= 0) THEN
         RETURN('UF : '+ i_to_s(uframe_no) +', UT : '+ i_to_s(utool_no) +',' & 
-            + '  CONFIG : '+ wrist + chr(32) + elbow + chr(32) + robot + ',' &
-            + i_to_s((configvar.cfg_turn_no1)) + ',' + i_to_s((configvar.cfg_turn_no2)) &
-            + i_to_s((configvar.cfg_turn_no3)) + ', ' + chr(13) &
+            + '  CONFIG : '+ configstr + chr(13) &
             + 'X = '+ r_to_s(p.x) +'mm, Y = '+ r_to_s(p.y) + 'mm, Z = '+ r_to_s(p.z) +'mm, '+ chr(13) &
             + 'W = '+ r_to_s(p.w) +'deg, P ='+ r_to_s(p.p) +'deg, R ='+ r_to_s(p.r) +'deg')
     ELSE
         RETURN('GP' + i_to_s(grp_no) + ':' + chr(13) &
             + 'UF : '+ i_to_s(uframe_no) +', UT : '+ i_to_s(utool_no) +',' & 
-            + '  CONFIG : '+ wrist + chr(32) + elbow + chr(32) + robot + ',' &
-            + i_to_s((configvar.cfg_turn_no1)) + ',' + i_to_s((configvar.cfg_turn_no2)) &
-            + i_to_s((configvar.cfg_turn_no3)) + ', ' + chr(13) &
+            + '  CONFIG : '+ configstr + chr(13) &
             + 'X = '+ r_to_s(p.x) +'mm, Y = '+ r_to_s(p.y) + 'mm, Z = '+ r_to_s(p.z) +'mm, '+ chr(13) &
             + 'W = '+ r_to_s(p.w) +'deg, P ='+ r_to_s(p.p) +'deg, R ='+ r_to_s(p.r) +'deg')
     ENDIF
-END pext_to_s
+  END p_to_s_conf
 
 -- Escapes quotes in a string
 ROUTINE esc_quotes
@@ -216,7 +271,7 @@ ROUTINE search_str
   	strLen  : INTEGER
   	srchLen : INTEGER
   	dmmy    : STRING[30]
- 	found   : BOOLEAN
+  	found   : BOOLEAN
   	i       : INTEGER
   BEGIN
   	strLen = STR_LEN(str)
@@ -224,10 +279,10 @@ ROUTINE search_str
   	found = FALSE
   
   	FOR i=1 TO strLen DO
-    		dmmy = SUB_STR(str,i,srchLen)
-    		IF (dmmy = srchStr) THEN
-     		 	found = TRUE
-      			GOTO searched
+      dmmy = SUB_STR(str,i,srchLen)
+      IF (dmmy = srchStr) THEN
+        found = TRUE
+          GOTO searched
    	 	ENDIF
   	ENDFOR
 	SEARCHED::
@@ -253,12 +308,12 @@ ROUTINE search_str
   	RETURN(isnum)
   END charisnum
 
-    -- string to integer
+  -- string to integer
   ROUTINE s_to_i
    VAR
    	int : INTEGER
-   	i : INTEGER
    	isNum : BOOLEAN
+    r : REAL
   BEGIN
   	isNum = FALSE
   	-- evaluate if string is a number
@@ -272,17 +327,81 @@ ROUTINE search_str
   			isNum = TRUE
   		ENDIF
   	ENDIF
+
   	--If not a number abort
   	IF isNum = FALSE THEN
       WRITE TPERROR(s, ' is not a number')
   	ENDIF
-  	
-  	CNV_STR_INT(s, int)
-  	
+
+    --parse if it is a float
+    IF search_str('.', s) AND isNum THEN
+      CNV_STR_REAL(s, r)
+      int = TRUNC(r)
+    ELSE
+      -- else string is an integer
+      CNV_STR_INT(s, int)
+    ENDIF
+  	-- error if integer is uninitalized at this point
   	IF UNINIT(int) THEN
       WRITE TPERROR(s, ' is not a integer')
   	ENDIF
   	
   	RETURN(int)
   	
-  END s_to_i  
+  END s_to_i
+
+  -- string to real
+  ROUTINE s_to_r
+  VAR
+    r : REAL
+  BEGIN
+    CNV_STR_REAL(s, r)
+
+    IF UNINIT(r) THEN
+      WRITE TPERROR(s, ' is not a real number')
+  	ENDIF
+
+    RETURN(r)
+  END s_to_r
+
+ROUTINE s_to_r_arr
+-- define chunk size in preprocessor
+%define chunk 16
+%defeval chunk2 %eval chunk+1
+  VAR
+    i : INTEGER
+    j : INTEGER
+    idx : INTEGER
+    splits : INTEGER
+    -- array needs to be 1 higher than chunk size
+    -- to store the excess string during the split
+    -- operation.
+    s_arr : ARRAY[chunk2] of STRING[chunk]
+  BEGIN
+    -- initialize output array index
+    idx = 0
+    -- count how many splits will be made
+    splits = char_count(s, delim)
+    -- divide by chunks to accomodate s_arr variables size
+    splits = TRUNC(splits/chunk) + 1
+
+    --loop split function over total number of chunks
+    FOR i=1 TO splits DO
+      --split by delimiter in chunk sized array
+      split_str(s, delim, s_arr)
+      --loop over size of s_arr, and store real values
+      -- into final output array.
+      FOR j=idx TO (chunk*i-1) DO
+        IF (NOT(s_arr[j MOD chunk + 1] = '')) AND (j < ARRAY_LEN(out_arr)) THEN
+          CNV_STR_REAL(s_arr[j MOD chunk + 1], out_arr[j + 1])
+        ENDIF
+      ENDFOR
+      -- modify string to last index to see
+      -- if there are more delimiter chars
+      -- to parse
+      s = s_arr[chunk2]
+      --increase idx to next chunk
+      idx = chunk
+    ENDFOR
+
+  END s_to_r_arr

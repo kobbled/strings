@@ -1,5 +1,5 @@
 bin/*.pc
 *.swp
 *.pc
-robot.ini
+robot*.ini
 build/
