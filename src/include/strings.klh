@@ -54,5 +54,9 @@ ROUTINE s_to_r(s : STRING) 			        : REAL FROM strings
 --convert a string to real array with a specified delimiter
 --in the string
 ROUTINE s_to_r_arr(s : STRING; delim : STRING; out_arr : ARRAY[*] OF REAL) FROM strings
+--convert numregister into a string, (ie. 'R[1]=0.0')
+ROUTINE numreg_to_s(reg_no : INTEGER)             : STRING FROM strings
+--convert numregister into a string, using p_to_s_conf(), or joint_to_s()
+ROUTINE posreg_to_s(reg_no, grp_no : INTEGER)     : STRING FROM strings
 
 %endif --strings_h

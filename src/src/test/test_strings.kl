@@ -184,6 +184,64 @@ ROUTINE t_str2rarr : BOOLEAN
           kunit_eq_r(6.626E1, r_arr[13]) AND kunit_eq_r(1.0, r_arr[18]))
   END t_str2rarr
 
+-- **** TESTS BELOW MANIPULATE REGISTERS!!!
+ROUTINE t_numreg2s : BOOLEAN
+  VAR
+    reg_no : INTEGER
+    value : INTEGER
+    v_str : STRING[5]
+    status : INTEGER
+  BEGIN
+    reg_no = 10
+    value = 2048
+    --convert value to string
+    v_str = i_to_s(value)
+    -- set register
+    SET_INT_REG(reg_no, value, status)
+    --retrieve numreg as string
+    -- and compare
+    RETURN(kunit_eq_str(i_to_s(value), numreg_to_s(reg_no)))
+  END t_numreg2s
+
+ROUTINE t_posreg2s : BOOLEAN
+  VAR
+    reg_no : INTEGER
+    expected : XYZWPREXT
+    uframe : INTEGER
+    utool : INTEGER
+    STATUS :INTEGER
+    conf_str : STRING[25]
+  BEGIN
+    --reg no
+    reg_no = 80
+    --store frame info
+    uframe = $MNUFRAMENUM[1]
+    utool = $MNUTOOLNUM[1]
+    --set position
+    expected.x = 10.0
+    expected.y = 30.0
+    expected.z = 190.0
+    expected.w = -90.0
+    expected.p = 0.0
+    expected.r = 180.0
+    conf_str = 'F U T, 0, 0, 0'
+    --convert to config type
+    CNV_STR_CONF(conf_str, expected.config_data, STATUS)
+    IF (status <> 0) THEN
+      WRITE TPDISPLAY(CR, 'problem in t_posreg2s with config str.')
+      RETURN(FALSE)
+    ENDIF
+    -- set pos reg
+    SET_POS_REG(reg_no, (expected), STATUS, 1)
+    IF (status <> 0) THEN
+      WRITE TPDISPLAY(CR, 'problem in t_posreg2s setting posreg')
+      RETURN(FALSE)
+    ENDIF
+    --compare expected to retrieved
+    RETURN(kunit_eq_str(p_to_s_conf(expected, 1, uframe, utool), &
+           posreg_to_s(reg_no, 1)))
+  END t_posreg2s
+
 
 
 BEGIN
@@ -203,6 +261,8 @@ BEGIN
   kunit_test('str2int()',t_str2int)
   kunit_test('str2real()',t_str2real)
   kunit_test('real_array_from_str()',t_str2rarr)
+  kunit_test('numreg_to_str', t_numreg2s)
+  kunit_test('posreg_to_str', t_posreg2s)
 
   kunit_done
 END test_strings

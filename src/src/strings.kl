@@ -405,3 +405,61 @@ ROUTINE s_to_r_arr
     ENDFOR
 
   END s_to_r_arr
+
+ROUTINE numreg_to_s
+  VAR
+    real_flg    :  BOOLEAN
+    real_val   :  REAL
+    int_val     : INTEGER
+    STATUS : INTEGER
+    s_val : STRING[10]
+  BEGIN
+    GET_REG(reg_no, real_flg, int_val, real_val, STATUS)
+    IF (STATUS <> 0) THEN
+      WRITE TPERROR('numreg_to_s, numreg not found')
+    ENDIF
+    --store as string
+    IF real_flg = FALSE THEN
+      s_val = i_to_s(int_val)
+    ELSE
+      s_val = r_to_s(real_val)
+    ENDIF
+
+    RETURN(s_val)
+  END numreg_to_s
+
+ROUTINE posreg_to_s
+  VAR
+    pos_type : INTEGER
+    num_axes  : INTEGER
+    STATUS : INTEGER
+    xyz   : XYZWPREXT
+    joint : JOINTPOS
+  BEGIN
+    -- see which representation the posreg is in
+    POS_REG_TYPE(reg_no, grp_no, pos_type, num_axes, STATUS)
+    IF (STATUS <> 0) THEN
+      WRITE TPERROR('posreg_to_s, error finding register type')
+    ENDIF
+
+    SELECT pos_type OF
+      -- cartesian rep
+      CASE (1, 2, 6) :
+        -- get position register as XYZWPREXT
+        xyz = GET_POS_REG(reg_no, STATUS, grp_no)
+        IF (STATUS <> 0) THEN
+          WRITE TPERROR('posreg_to_s, could not retrieve posreg')
+        ENDIF
+        -- return as string
+        RETURN(p_to_s_conf(xyz, grp_no, ($MNUFRAMENUM[grp_no]), ($MNUTOOLNUM[grp_no])))
+      -- joint rep
+      CASE (9) :
+        -- get position register as JOINTPOS
+        joint = GET_JPOS_REG(reg_no, STATUS, grp_no)
+        IF (STATUS <> 0) THEN
+          WRITE TPERROR('posreg_to_s, could not retrieve posreg')
+        ENDIF
+        -- return as string
+        RETURN(joint_to_s(joint, ','))
+    ENDSELECT
+  END posreg_to_s
