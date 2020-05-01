@@ -1,0 +1,8 @@
+%ifndef strings_t
+%define strings_t
+
+TYPE
+    SCELLS = ARRAY[100] OF STRING[10]
+    STRING2D = ARRAY[100] OF SCELLS
+
+%endif --strings_t

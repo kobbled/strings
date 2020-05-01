@@ -1,7 +1,7 @@
 PROGRAM strings
 %NOLOCKGROUP
 
-%INCLUDE strings.klh
+%include strings.klh
 
 BEGIN
 END strings
@@ -151,6 +151,55 @@ ROUTINE r_to_s
     RETURN(s)
   END r_to_s
 
+ROUTINE rarr_to_s
+  VAR
+    s : STRING[254]
+    i : INTEGER
+  BEGIN
+    FOR i=1 TO ARRAY_LEN(arr) DO
+      s = s + r_to_s(arr[i])
+      IF i < ARRAY_LEN(arr) THEN
+        s = s + delim
+      ENDIF
+    ENDFOR
+
+    RETURN(s)
+  END rarr_to_s
+
+ROUTINE iarr_to_s
+  VAR
+    s : STRING[254]
+    i : INTEGER
+  BEGIN
+    FOR i=1 TO ARRAY_LEN(arr) DO
+      s = s + i_to_s(arr[i])
+      IF i < ARRAY_LEN(arr) THEN
+        s = s + delim
+      ENDIF
+    ENDFOR
+
+    RETURN(s)
+  END iarr_to_s
+
+ROUTINE rarr2d_to_s
+  VAR
+    s : STRING[254]
+    i,j : INTEGER
+  BEGIN
+    s = ''
+    FOR i=1 TO ARRAY_LEN(arr) DO
+      FOR j=1 TO ARRAY_LEN(row) DO
+        row[j] = arr[i,j]
+      ENDFOR
+      s = s + rarr_to_s(row, row_delim)
+      IF i < ARRAY_LEN(arr) THEN
+        s = s + col_delim
+      ENDIF
+    ENDFOR
+
+    RETURN(s)
+  END rarr2d_to_s
+
 ROUTINE p_to_s
   BEGIN
     RETURN('X: ' + r_to_s(p.x) + ' Y: ' + r_to_s(p.y) + ' Z: ' + r_to_s(p.z) + chr(13) &
@@ -194,11 +243,13 @@ ROUTINE joint_to_s
 ROUTINE s_to_joint
   VAR
     r_joints : ARRAY[9] OF REAL
+    s_joints : ARRAY[9] OF STRING[10]
     pose : JOINTPOS9
     status : INTEGER
     i : INTEGER
   BEGIN
-    s_to_r_arr(s, delim, r_joints)
+    s_to_arr(s, delim, s_joints)
+    sarr_to_rarr(s_joints, r_joints)
     --set uninitialized data
     FOR i=1 TO ARRAY_LEN(r_joints) DO
       IF UNINIT(r_joints[i]) THEN
@@ -292,7 +343,7 @@ ROUTINE search_str
 
 -- Determine if character is a number. A character of 
 -- String[1] is evaluated to see if its a number. 
-  ROUTINE charisnum
+ROUTINE charisnum
   VAR
     isnum : BOOLEAN
   BEGIN
@@ -308,8 +359,8 @@ ROUTINE search_str
   	RETURN(isnum)
   END charisnum
 
-  -- string to integer
-  ROUTINE s_to_i
+-- string to integer
+ROUTINE s_to_i
    VAR
    	int : INTEGER
    	isNum : BOOLEAN
@@ -350,8 +401,8 @@ ROUTINE search_str
   	
   END s_to_i
 
-  -- string to real
-  ROUTINE s_to_r
+-- string to real
+ROUTINE s_to_r
   VAR
     r : REAL
   BEGIN
@@ -364,7 +415,7 @@ ROUTINE search_str
     RETURN(r)
   END s_to_r
 
-ROUTINE s_to_r_arr
+ROUTINE s_to_arr
 -- define chunk size in preprocessor
 %define chunk 16
 %defeval chunk2 %eval chunk+1
@@ -393,7 +444,7 @@ ROUTINE s_to_r_arr
       -- into final output array.
       FOR j=idx TO (chunk*i-1) DO
         IF (NOT(s_arr[j MOD chunk + 1] = '')) AND (j < ARRAY_LEN(out_arr)) THEN
-          CNV_STR_REAL(s_arr[j MOD chunk + 1], out_arr[j + 1])
+          out_arr[j + 1] = s_arr[j MOD chunk + 1]
         ENDIF
       ENDFOR
       -- modify string to last index to see
@@ -404,7 +455,34 @@ ROUTINE s_to_r_arr
       idx = chunk
     ENDFOR
 
-  END s_to_r_arr
+  END s_to_arr
+
+ROUTINE sarr_to_rarr
+  VAR
+    i  : INTEGER
+  BEGIN
+    FOR i=1 TO ARRAY_LEN(sarr) DO
+      out_rarr[i] = s_to_r(sarr[i])
+    ENDFOR
+  END sarr_to_rarr
+
+ROUTINE rarr_to_sarr
+  VAR
+    i  : INTEGER
+  BEGIN
+    FOR i=1 TO ARRAY_LEN(rarr) DO
+      out_sarr[i] = r_to_s(rarr[i])
+    ENDFOR
+  END rarr_to_sarr
+
+ROUTINE sarr_to_iarr
+  VAR
+    i  : INTEGER
+  BEGIN
+    FOR i=1 TO ARRAY_LEN(sarr) DO
+      out_iarr[i] = s_to_i(sarr[i])
+    ENDFOR
+  END sarr_to_iarr
 
 ROUTINE numreg_to_s
   VAR

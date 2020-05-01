@@ -1,7 +1,6 @@
 %ifndef strings_h
 %define strings_h
 
-
 --  split_str: Takes a string and a separator and splits it into an array
 -----------------
 -- str : STRING - the STRING to separate
@@ -23,6 +22,11 @@ ROUTINE b_to_s(b : BOOLEAN)               : STRING FROM strings
 ROUTINE i_to_s(i : INTEGER)               : STRING FROM strings
 --converts a real number to a string
 ROUTINE r_to_s(r : REAL)                  : STRING FROM strings
+--array to a string seperated by character delim
+ROUTINE rarr_to_s(arr : ARRAY[*] OF REAL; delim : STRING) : STRING FROM strings
+ROUTINE iarr_to_s(arr : ARRAY[*] OF INTEGER; delim : STRING) : STRING FROM strings
+--2d array to a string seperated by character delim
+ROUTINE rarr2d_to_s(arr : ARRAY[*,*] OF REAL; row : ARRAY[*] OF REAL; row_delim, col_delim : STRING) : STRING FROM strings
 -- converts a position to a string
 -- eg.)
 -- X: 1.1 Y: 2.2 Z: 3.3
@@ -53,7 +57,11 @@ ROUTINE s_to_i(s : STRING) 			        : INTEGER FROM strings
 ROUTINE s_to_r(s : STRING) 			        : REAL FROM strings
 --convert a string to real array with a specified delimiter
 --in the string
-ROUTINE s_to_r_arr(s : STRING; delim : STRING; out_arr : ARRAY[*] OF REAL) FROM strings
+ROUTINE s_to_arr(s : STRING; delim : STRING; out_arr : ARRAY[*] OF STRING) FROM strings
+-- convert 1d arrays between various types
+ROUTINE sarr_to_rarr(sarr : ARRAY[*] OF STRING ; out_rarr : ARRAY[*] OF REAL) FROM strings
+ROUTINE rarr_to_sarr(rarr : ARRAY[*] OF REAL ; out_sarr : ARRAY[*] OF STRING) FROM strings
+ROUTINE sarr_to_iarr(sarr : ARRAY[*] OF STRING ; out_iarr : ARRAY[*] OF INTEGER) FROM strings
 --convert numregister into a string, (ie. 'R[1]=0.0')
 ROUTINE numreg_to_s(reg_no : INTEGER)             : STRING FROM strings
 --convert numregister into a string, using p_to_s_conf(), or joint_to_s()

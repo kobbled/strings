@@ -1,8 +1,9 @@
 PROGRAM test_strings
 %NOLOCKGROUP
 
-%INCLUDE kunit.klh
-%INCLUDE strings.klh
+%include strings.klt
+%include strings.klh
+%include kunit.klh
 
 ROUTINE t_split_str : BOOLEAN
   VAR
@@ -173,11 +174,13 @@ ROUTINE t_str2rarr : BOOLEAN
   VAR
     rstr : STRING[90]
     r_arr : ARRAY[18] OF REAL
+    s_arr : ARRAY[18] OF STRING[10]
     b : BOOLEAN
   BEGIN
     rstr = '3.21,1.09,5.5,6.00,1.111,8,2.718,3.14159,6.02,111.123'
     rstr = rstr + ',-6.38,1E5,6.626E1,1.618,2,3,9.81,1.0'
-    s_to_r_arr(rstr, ',', r_arr)
+    s_to_arr(rstr, ',', s_arr)
+    sarr_to_rarr(s_arr, r_arr)
 
     RETURN(kunit_eq_r(3.21, r_arr[1]) AND kunit_eq_r(5.5, r_arr[3]) AND
           kunit_eq_r(3.14159, r_arr[8]) AND kunit_eq_r(-6.38, r_arr[11]) AND
