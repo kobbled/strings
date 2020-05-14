@@ -187,6 +187,20 @@ ROUTINE t_str2rarr : BOOLEAN
           kunit_eq_r(6.626E1, r_arr[13]) AND kunit_eq_r(1.0, r_arr[18]))
   END t_str2rarr
 
+ROUTINE t_strreg : BOOLEAN
+  VAR
+    numreg : INTEGER
+    str : STRING[30]
+    status : INTEGER
+  BEGIN
+    -- set string register
+    numreg = 6
+    str = 'string register test!'
+    SET_STR_REG(numreg, str, status)
+
+    RETURN(kunit_eq_str(str, strreg_to_s(numreg)))
+  END t_strreg
+
 -- **** TESTS BELOW MANIPULATE REGISTERS!!!
 ROUTINE t_numreg2s : BOOLEAN
   VAR
@@ -266,6 +280,7 @@ BEGIN
   kunit_test('real_array_from_str()',t_str2rarr)
   kunit_test('numreg_to_str', t_numreg2s)
   kunit_test('posreg_to_str', t_posreg2s)
+  kunit_test('string_register_retrieve', t_strreg)
 
   kunit_done
 END test_strings

@@ -62,8 +62,10 @@ ROUTINE s_to_arr(s : STRING; delim : STRING; out_arr : ARRAY[*] OF STRING) FROM 
 ROUTINE sarr_to_rarr(sarr : ARRAY[*] OF STRING ; out_rarr : ARRAY[*] OF REAL) FROM strings
 ROUTINE rarr_to_sarr(rarr : ARRAY[*] OF REAL ; out_sarr : ARRAY[*] OF STRING) FROM strings
 ROUTINE sarr_to_iarr(sarr : ARRAY[*] OF STRING ; out_iarr : ARRAY[*] OF INTEGER) FROM strings
---convert numregister into a string, (ie. 'R[1]=0.0')
+--convert numregister into a string, (ie. R[1]=150.0 , o->'150.0' )
 ROUTINE numreg_to_s(reg_no : INTEGER)             : STRING FROM strings
+--convert string register into a string, (ie. 'SR[1]=foo' o-> foo)
+ROUTINE strreg_to_s(reg_no : INTEGER)             : STRING FROM strings
 --convert numregister into a string, using p_to_s_conf(), or joint_to_s()
 ROUTINE posreg_to_s(reg_no, grp_no : INTEGER)     : STRING FROM strings
 

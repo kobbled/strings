@@ -517,6 +517,19 @@ ROUTINE numreg_to_s
     RETURN(lstrip(rstrip(s_val)))
   END numreg_to_s
 
+ROUTINE strreg_to_s
+  VAR
+    STATUS : INTEGER
+    s_val : STRING[50]
+  BEGIN
+    GET_STR_REG(reg_no,s_val,status)
+    IF (STATUS <> 0) THEN
+      WRITE TPERROR('strreg_to_s: error returning SR[', i_to_s(reg_no), ']')
+    ENDIF
+
+    RETURN(s_val)
+  END strreg_to_s
+
 ROUTINE posreg_to_s
   VAR
     pos_type : INTEGER
