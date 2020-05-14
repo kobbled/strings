@@ -253,7 +253,7 @@ ROUTINE s_to_joint
     --set uninitialized data
     FOR i=1 TO ARRAY_LEN(r_joints) DO
       IF UNINIT(r_joints[i]) THEN
-        r_joints[i] = 0
+        r_joints[i] = 0.0
       ENDIF
     ENDFOR
     --convert to jointpos
@@ -282,13 +282,13 @@ VAR
         RETURN('UF : '+ i_to_s(uframe_no) +', UT : '+ i_to_s(utool_no) +',' & 
             + '  CONFIG : '+ configstr + chr(13) &
             + 'X = '+ r_to_s(p.x) +'mm, Y = '+ r_to_s(p.y) + 'mm, Z = '+ r_to_s(p.z) +'mm, '+ chr(13) &
-            + 'W = '+ r_to_s(p.w) +'deg, P ='+ r_to_s(p.p) +'deg, R ='+ r_to_s(p.r) +'deg')
+            + 'W = '+ r_to_s(p.w) +'deg, P = '+ r_to_s(p.p) +'deg, R = '+ r_to_s(p.r) +'deg')
     ELSE
         RETURN('GP' + i_to_s(grp_no) + ':' + chr(13) &
             + 'UF : '+ i_to_s(uframe_no) +', UT : '+ i_to_s(utool_no) +',' & 
             + '  CONFIG : '+ configstr + chr(13) &
             + 'X = '+ r_to_s(p.x) +'mm, Y = '+ r_to_s(p.y) + 'mm, Z = '+ r_to_s(p.z) +'mm, '+ chr(13) &
-            + 'W = '+ r_to_s(p.w) +'deg, P ='+ r_to_s(p.p) +'deg, R ='+ r_to_s(p.r) +'deg')
+            + 'W = '+ r_to_s(p.w) +'deg, P = '+ r_to_s(p.p) +'deg, R = '+ r_to_s(p.r) +'deg')
     ENDIF
   END p_to_s_conf
 
@@ -367,6 +367,7 @@ ROUTINE s_to_i
     r : REAL
   BEGIN
   	isNum = FALSE
+    int = 0
   	-- evaluate if string is a number
   	IF SUB_STR(s,1,1) = '-' THEN
   		int = -1
@@ -406,10 +407,16 @@ ROUTINE s_to_r
   VAR
     r : REAL
   BEGIN
+    IF UNINIT(s) THEN
+      WRITE TPERROR('s_to_r: string input is not initialized')
+      RETURN(0.0)
+    ENDIF
+
     CNV_STR_REAL(s, r)
 
     IF UNINIT(r) THEN
       WRITE TPERROR(s, ' is not a real number')
+      RETURN(0.0)
   	ENDIF
 
     RETURN(r)
@@ -462,7 +469,11 @@ ROUTINE sarr_to_rarr
     i  : INTEGER
   BEGIN
     FOR i=1 TO ARRAY_LEN(sarr) DO
-      out_rarr[i] = s_to_r(sarr[i])
+      --do not attempt to fill uninitialized data
+      --for instance if JOINTPOS6 is fit into JOINTPOS9 type
+      IF NOT UNINIT(sarr[i]) THEN
+        out_rarr[i] = s_to_r(sarr[i])
+      ENDIF
     ENDFOR
   END sarr_to_rarr
 
@@ -494,7 +505,7 @@ ROUTINE numreg_to_s
   BEGIN
     GET_REG(reg_no, real_flg, int_val, real_val, STATUS)
     IF (STATUS <> 0) THEN
-      WRITE TPERROR('numreg_to_s, numreg not found')
+      WRITE TPERROR('numreg_to_s: error returning R[', i_to_s(reg_no), ']')
     ENDIF
     --store as string
     IF real_flg = FALSE THEN
@@ -503,7 +514,7 @@ ROUTINE numreg_to_s
       s_val = r_to_s(real_val)
     ENDIF
 
-    RETURN(s_val)
+    RETURN(lstrip(rstrip(s_val)))
   END numreg_to_s
 
 ROUTINE posreg_to_s
@@ -517,7 +528,8 @@ ROUTINE posreg_to_s
     -- see which representation the posreg is in
     POS_REG_TYPE(reg_no, grp_no, pos_type, num_axes, STATUS)
     IF (STATUS <> 0) THEN
-      WRITE TPERROR('posreg_to_s, error finding register type')
+      WRITE TPERROR('posreg_to_s, error finding register type for PR[', 
+                    i_to_s(reg_no), ']')
     ENDIF
 
     SELECT pos_type OF
@@ -526,7 +538,8 @@ ROUTINE posreg_to_s
         -- get position register as XYZWPREXT
         xyz = GET_POS_REG(reg_no, STATUS, grp_no)
         IF (STATUS <> 0) THEN
-          WRITE TPERROR('posreg_to_s, could not retrieve posreg')
+          WRITE TPERROR('posreg_to_s, could not retrieve PR[', 
+                    i_to_s(reg_no), ']')
         ENDIF
         -- return as string
         RETURN(p_to_s_conf(xyz, grp_no, ($MNUFRAMENUM[grp_no]), ($MNUTOOLNUM[grp_no])))
@@ -535,7 +548,8 @@ ROUTINE posreg_to_s
         -- get position register as JOINTPOS
         joint = GET_JPOS_REG(reg_no, STATUS, grp_no)
         IF (STATUS <> 0) THEN
-          WRITE TPERROR('posreg_to_s, could not retrieve posreg')
+          WRITE TPERROR('posreg_to_s, could not retrieve PR[', 
+                    i_to_s(reg_no), ']')
         ENDIF
         -- return as string
         RETURN(joint_to_s(joint, ','))
