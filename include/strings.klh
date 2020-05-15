@@ -27,12 +27,16 @@ ROUTINE rarr_to_s(arr : ARRAY[*] OF REAL; delim : STRING) : STRING FROM strings
 ROUTINE iarr_to_s(arr : ARRAY[*] OF INTEGER; delim : STRING) : STRING FROM strings
 --2d array to a string seperated by character delim
 ROUTINE rarr2d_to_s(arr : ARRAY[*,*] OF REAL; row : ARRAY[*] OF REAL; row_delim, col_delim : STRING) : STRING FROM strings
--- converts a position to a string
+-- converts a position to a formatted string
 -- eg.)
 -- X: 1.1 Y: 2.2 Z: 3.3
 -- W: 4.4 P: 5.5 R: 6.6
 ROUTINE p_to_s(p : XYZWPR)                : STRING FROM strings
--- convert joint into a string deliminated by a user selected char
+-- convert joint into a deliminated string
+ROUTINE pose_to_s(p : XYZWPR; delim : STRING)            : STRING FROM strings
+--convert vector to string
+ROUTINE vec_to_s(v: VECTOR; delim : STRING)   : STRING FROM strings
+-- convert joint into a deliminated string
 ROUTINE joint_to_s(pose : JOINTPOS; delim : STRING)            : STRING FROM strings
 -- convert a string (e.g. '10.0,30.0,190.0,-90.0,0.0,180.0') into
 -- a jointpos type

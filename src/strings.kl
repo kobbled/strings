@@ -1,10 +1,26 @@
 PROGRAM strings
 %NOLOCKGROUP
 
+%include strings.private.klh
 %include strings.klh
 
 BEGIN
 END strings
+
+-- private
+
+ROUTINE delim_check
+  BEGIN
+    -- sanity check deliminating character
+    IF STR_LEN(d) > 1 THEN
+      -- applicable for chars ' :;,/'
+      IF NOT ((d = ' ') OR (d = ':') OR (d = ';') & 
+               OR (d = ',') OR (d = '/')) THEN
+        CLR_IO_STAT(TPDISPLAY)
+        WRITE TPERROR(d, ' is not a deliminating character. Check header.')
+      ENDIF
+  	ENDIF
+  END delim_check
 
 -- Public: Takes a string and a separator and splits it into an array
 --
@@ -206,6 +222,25 @@ ROUTINE p_to_s
       + 'W: ' + r_to_s(p.w) + ' P: ' + r_to_s(p.p) + ' R: ' + r_to_s(p.r))
    END p_to_s
 
+ROUTINE pose_to_s
+  BEGIN
+
+    delim_check(delim)
+
+    RETURN(   r_to_s(p.x) + delim + r_to_s(p.y) + delim + r_to_s(p.z) &
+    + delim + r_to_s(p.w) + delim + r_to_s(p.p) + delim + r_to_s(p.r))
+
+   END pose_to_s
+
+ROUTINE vec_to_s
+  BEGIN
+
+    delim_check(delim)
+
+    RETURN(r_to_s(v.x) + delim + r_to_s(v.y) + delim  + r_to_s(v.z))
+
+   END vec_to_s
+
 ROUTINE joint_to_s
   VAR
     arr : ARRAY[9] OF REAL
@@ -213,15 +248,7 @@ ROUTINE joint_to_s
     i  : INTEGER
     s : STRING[50]
   BEGIN
-    -- sanity check deliminating character
-    IF STR_LEN(delim) > 1 THEN
-      -- applicable for chars ' :;,/'
-      IF NOT ((delim = ' ') OR (delim = ':') OR (delim = ';') & 
-               OR (delim = ',') OR (delim = '/')) THEN
-        CLR_IO_STAT(TPDISPLAY)
-        WRITE TPERROR(delim, 'is not a deliminating character. Check header.')
-      ENDIF
-  	ENDIF
+    delim_check(delim)
 
     --convert JPOS into a string
     CNV_JPOS_REL(pose, arr, status)

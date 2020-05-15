@@ -77,6 +77,25 @@ ROUTINE t_p_to_s : BOOLEAN
      + 'W: 4.4 P: 5.5 R: 6.6', p_to_s(p)))
   END t_p_to_s
 
+ROUTINE t_delim_pos : BOOLEAN
+  VAR
+    p : XYZWPR
+  BEGIN
+    p.x = 1.1 ; p.y = 2.2 ; p.z = 3.3 ;
+    p.w = 4.4 ; p.p = 5.5 ; p.r = 6.6 ;
+
+    RETURN(kunit_eq_str('1.1,2.2,3.3,4.4,5.5,6.6', pose_to_s(p, ',')))
+  END t_delim_pos
+
+ROUTINE t_vec2str : BOOLEAN
+  VAR
+    v : VECTOR
+  BEGIN
+    v.x = 20 ; v.y = 80.5 ; v.z = 150.899 ;
+
+    RETURN(kunit_eq_str('20.0,80.5,150.899', vec_to_s(v, ',')))
+  END t_vec2str
+
 ROUTINE t_joint2str : BOOLEAN
   VAR
     pose : JOINTPOS6
@@ -270,6 +289,8 @@ BEGIN
   kunit_test('i_to_s()', t_i_to_s)
   kunit_test('r_to_s()', t_r_to_s)
   kunit_test('p_to_s()', t_p_to_s)
+  kunit_test('pose2delim_str()', t_delim_pos)
+  kunit_test('v_to_s()', t_vec2str)
   kunit_test('joint2str()',t_joint2str)
   kunit_test('str2joint()',t_str2joint)
   kunit_test('esc_quotes()', t_esc_quotes)
