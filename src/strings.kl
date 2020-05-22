@@ -1,7 +1,6 @@
 PROGRAM strings
 %NOLOCKGROUP
 
-%include strings.private.klh
 %include strings.klh
 
 BEGIN

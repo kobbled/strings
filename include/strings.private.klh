@@ -1,7 +1,5 @@
 %ifndef strings_private_h
 %define strings_private_h
 
---do delimeter sanity check
-ROUTINE delim_check(d :STRING) FROM strings
 
 %endif --strings_private
