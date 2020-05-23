@@ -385,6 +385,103 @@ ROUTINE charisnum
   	RETURN(isnum)
   END charisnum
 
+
+--real data items are in the form:
+--(-)d(.)ddd(E+|-)dd
+ROUTINE strisreal
+  VAR
+    i : INTEGER
+    isSci, isDot  : BOOLEAN
+    c : STRING[1]
+    d_cnt : INTEGER
+  BEGIN
+    --check if it contains 
+    --strip white space at ends
+    s = lstrip(rstrip(s))
+
+    isSci = FALSE ; isDot = FALSE; -- flag if '.', '-', or 'E'
+    d_cnt = 0 --count number of digits
+    --loop through characters
+    i = 1
+    WHILE i <= STR_LEN(s) DO
+      c = SUB_STR(s,i,1)
+      IF (i=1) THEN
+        --if a char make sure its a digit
+        IF (STR_LEN(s) = 1) AND (NOT charisnum(c)) THEN
+          RETURN(FALSE)
+        ENDIF
+        --check if negative
+        IF (c = '-') THEN
+          GOTO NEXTREALC
+        ENDIF
+      ENDIF
+
+      --check if digit
+      IF (charisnum(c)) THEN
+        d_cnt = d_cnt + 1
+        GOTO NEXTREALC
+      ELSE
+        --E must not come before .
+        IF (c = '.') AND (NOT isDot) AND (NOT isSci) THEN
+          isDot = TRUE
+          --check that next character is a digit
+          i = i + 1
+          c = SUB_STR(s,i,1)
+          IF (NOT charisnum(c)) THEN RETURN(FALSE); ENDIF
+          GOTO NEXTREALC
+        --might be scientific notation. E cant be last character
+        --at least one digit must come before it.
+        ELSE IF (c = 'E') AND (d_cnt>0) AND (i<STR_LEN(s)) AND (NOT isSci) THEN
+          isSci = TRUE
+          --next character must be a '+', or '-'
+          i = i + 1
+          c = SUB_STR(s,i,1)
+          IF NOT (c = '+') AND NOT (c = '-') THEN RETURN(FALSE); ENDIF
+          GOTO NEXTREALC
+        ELSE
+          RETURN(FALSE)
+        ENDIF
+        ENDIF
+      ENDIF
+
+      NEXTREALC::
+      i = i + 1
+    ENDWHILE
+
+    RETURN(TRUE)
+  END strisreal
+
+
+ROUTINE strisint
+  VAR
+    i : INTEGER
+    c : STRING[1]
+  BEGIN
+    --loop through characters
+    i = 1
+    WHILE i <= STR_LEN(s) DO
+      c = SUB_STR(s,i,1)
+      IF (i=1) THEN
+        --check if negative
+        IF (c = '-') THEN
+          GOTO NEXTINTC
+        ENDIF
+      ENDIF
+
+      IF (charisnum(c)) THEN
+        GOTO NEXTINTC
+      ELSE
+        RETURN(FALSE)
+      ENDIF
+
+      NEXTINTC::
+      i = i + 1
+    ENDWHILE
+
+    RETURN(TRUE)
+  END strisint
+
+
 -- string to integer
 ROUTINE s_to_i
    VAR
@@ -448,6 +545,43 @@ ROUTINE s_to_r
     RETURN(r)
   END s_to_r
 
+--string to vector
+ROUTINE s_to_vec
+  VAR
+    v : VECTOR
+    i : INTEGER
+    arr : ARRAY[3] OF REAL
+  BEGIN
+    s_to_rarr(s, delim, arr)
+    FOR i=1 TO ARRAY_LEN(arr) DO
+      v.x = arr[1]
+      v.y = arr[2]
+      v.z = arr[3]
+    ENDFOR
+
+    RETURN(v)
+  END s_to_vec
+
+ROUTINE s_to_xyzwpr
+  VAR
+    pos : XYZWPR
+    i : INTEGER
+    arr : ARRAY[6] OF REAL
+  BEGIN
+    s_to_rarr(s, delim, arr)
+    FOR i=1 TO ARRAY_LEN(arr) DO
+      pos.x = arr[1]
+      pos.y = arr[2]
+      pos.z = arr[3]
+      pos.w = arr[4]
+      pos.p = arr[5]
+      pos.r = arr[6]
+    ENDFOR
+
+    RETURN(pos)
+  END s_to_xyzwpr
+
+
 ROUTINE s_to_arr
 -- define chunk size in preprocessor
 %define chunk 16
@@ -457,6 +591,13 @@ ROUTINE s_to_arr
     j : INTEGER
     idx : INTEGER
     splits : INTEGER
+    --Need to store in temporary string array.
+    --since this cannot be variable size we will
+    --have to split the data into defined chunck sizes
+    --Since split_str will dump the rest of the string
+    --into the last array index if there is still data left
+    --we can use this to process the chunks.
+    --
     -- array needs to be 1 higher than chunk size
     -- to store the excess string during the split
     -- operation.
@@ -489,6 +630,64 @@ ROUTINE s_to_arr
     ENDFOR
 
   END s_to_arr
+
+ROUTINE s_to_rarr
+-- define chunk size in preprocessor
+%define chunk 16
+%defeval chunk2 %eval chunk+1
+  VAR
+    i : INTEGER
+    j : INTEGER
+    idx : INTEGER
+    splits : INTEGER
+    s_arr : ARRAY[chunk2] of STRING[chunk]
+  BEGIN
+    idx = 0
+    splits = char_count(s, delim)
+    splits = TRUNC(splits/chunk) + 1
+
+    FOR i=1 TO splits DO
+      split_str(s, delim, s_arr)
+      FOR j=idx TO (chunk*i-1) DO
+        IF (NOT(s_arr[j MOD chunk + 1] = '')) AND (j < ARRAY_LEN(out_arr)) THEN
+          out_arr[j + 1] = s_to_r(s_arr[j MOD chunk + 1])
+        ENDIF
+      ENDFOR
+      s = s_arr[chunk2]
+
+      idx = chunk
+    ENDFOR
+  
+  END s_to_rarr
+
+ROUTINE s_to_iarr
+-- define chunk size in preprocessor
+%define chunk 16
+%defeval chunk2 %eval chunk+1
+  VAR
+    i : INTEGER
+    j : INTEGER
+    idx : INTEGER
+    splits : INTEGER
+    s_arr : ARRAY[chunk2] of STRING[chunk]
+  BEGIN
+    idx = 0
+    splits = char_count(s, delim)
+    splits = TRUNC(splits/chunk) + 1
+
+    FOR i=1 TO splits DO
+      split_str(s, delim, s_arr)
+      FOR j=idx TO (chunk*i-1) DO
+        IF (NOT(s_arr[j MOD chunk + 1] = '')) AND (j < ARRAY_LEN(out_arr)) THEN
+          out_arr[j + 1] = s_to_i(s_arr[j MOD chunk + 1])
+        ENDIF
+      ENDFOR
+      s = s_arr[chunk2]
+
+      idx = chunk
+    ENDFOR
+  
+  END s_to_iarr
 
 ROUTINE sarr_to_rarr
   VAR

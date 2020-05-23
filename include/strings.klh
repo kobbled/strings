@@ -57,13 +57,25 @@ ROUTINE esc_quotes(s : STRING)            : STRING FROM strings
 ROUTINE search_str(srchStr : STRING; str: STRING) : BOOLEAN FROM strings
 --Determine if character is a number
 ROUTINE charisnum(s : STRING)               : BOOLEAN FROM strings
+--determine if a string is a real number
+ROUTINE strisreal(s : STRING)               : BOOLEAN FROM strings
+--determine if a string is a integer
+ROUTINE strisint(s : STRING)               : BOOLEAN FROM strings
 --convert a string to an integer
 ROUTINE s_to_i(s : STRING) 			        : INTEGER FROM strings
 --convert a string to real
 ROUTINE s_to_r(s : STRING) 			        : REAL FROM strings
+--convert string to vector
+ROUTINE s_to_vec(s: STRING; delim : STRING)   : VECTOR FROM strings
+--convert string to xyzwpr
+ROUTINE s_to_xyzwpr(s: STRING; delim : STRING)   : XYZWPR FROM strings
 --convert a string to real array with a specified delimiter
 --in the string
 ROUTINE s_to_arr(s : STRING; delim : STRING; out_arr : ARRAY[*] OF STRING) FROM strings
+--convert string to array of reals
+ROUTINE s_to_rarr(s : STRING; delim : STRING; out_arr : ARRAY[*] OF REAL) FROM strings
+--convert string to array of ints
+ROUTINE s_to_iarr(s : STRING; delim : STRING; out_arr : ARRAY[*] OF INTEGER) FROM strings
 -- convert 1d arrays between various types
 ROUTINE sarr_to_rarr(sarr : ARRAY[*] OF STRING ; out_rarr : ARRAY[*] OF REAL) FROM strings
 ROUTINE rarr_to_sarr(rarr : ARRAY[*] OF REAL ; out_sarr : ARRAY[*] OF STRING) FROM strings

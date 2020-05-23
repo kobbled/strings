@@ -193,13 +193,12 @@ ROUTINE t_str2rarr : BOOLEAN
   VAR
     rstr : STRING[90]
     r_arr : ARRAY[18] OF REAL
-    s_arr : ARRAY[18] OF STRING[10]
     b : BOOLEAN
   BEGIN
     rstr = '3.21,1.09,5.5,6.00,1.111,8,2.718,3.14159,6.02,111.123'
     rstr = rstr + ',-6.38,1E5,6.626E1,1.618,2,3,9.81,1.0'
-    s_to_arr(rstr, ',', s_arr)
-    sarr_to_rarr(s_arr, r_arr)
+
+    s_to_rarr(rstr, ',', r_arr)
 
     RETURN(kunit_eq_r(3.21, r_arr[1]) AND kunit_eq_r(5.5, r_arr[3]) AND
           kunit_eq_r(3.14159, r_arr[8]) AND kunit_eq_r(-6.38, r_arr[11]) AND
@@ -278,6 +277,23 @@ ROUTINE t_posreg2s : BOOLEAN
            posreg_to_s(reg_no, 1)))
   END t_posreg2s
 
+ROUTINE t_isreal : BOOLEAN
+  BEGIN
+    RETURN(kunit_assert(strisreal('5.025E-05')) AND kunit_assert(strisreal('-0.1234')) AND &
+           kunit_assert(strisreal('-.12E+02')) AND kunit_assert(strisreal('1988.10')) AND & 
+           kunit_assert(strisreal('99999')) AND kunit_assert( NOT strisreal('-01E2.34')) AND &
+           kunit_assert(NOT strisreal('FIVE')) AND kunit_assert(NOT strisreal('-E1234')) AND &
+           kunit_assert(NOT strisreal('.-9876')) )
+  END t_isreal
+
+
+ROUTINE t_isint : BOOLEAN
+  BEGIN
+    RETURN(kunit_assert(strisint('-2578')) AND kunit_assert(strisint('0001')) AND & 
+           kunit_assert(NOT strisint('3.14159')) AND kunit_assert(NOT strisint('-200.99')) AND &
+           kunit_assert(strisint('2')) )
+  END t_isint
+
 
 
 BEGIN
@@ -302,6 +318,8 @@ BEGIN
   kunit_test('numreg_to_str', t_numreg2s)
   kunit_test('posreg_to_str', t_posreg2s)
   kunit_test('string_register_retrieve', t_strreg)
+  kunit_test('test if strings are reals', t_isreal)
+  kunit_test('test if strings are ints', t_isint)
 
   kunit_done
 END test_strings
