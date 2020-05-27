@@ -9,7 +9,7 @@
     "src/strings.kl"
   ],
   "tests" : [
-    "src/test/test_strings.kl"
+    "test/test_strings.kl"
   ],
   "includes" : [
     "include"
