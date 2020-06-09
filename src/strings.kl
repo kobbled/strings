@@ -8,6 +8,7 @@ END strings
 
 -- private
 
+-- public
 ROUTINE delim_check
   BEGIN
     -- sanity check deliminating character
@@ -21,7 +22,20 @@ ROUTINE delim_check
   	ENDIF
   END delim_check
 
--- Public: Takes a string and a separator and splits it into an array
+ROUTINE delim_strip
+  VAR
+    i : INTEGER
+  BEGIN
+    FOR i = STR_LEN(s) DOWNTO 1 DO
+      IF SUB_STR(s,i,1) <> delim THEN
+        RETURN(SUB_STR(s,1,i))
+      ENDIF
+    ENDFOR
+
+    RETURN(s)
+  END delim_strip
+
+-- Takes a string and a separator and splits it into an array
 --
 -- str : STRING - the STRING to separate
 -- sep : STRING - which character separates the string

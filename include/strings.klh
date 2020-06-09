@@ -14,6 +14,7 @@ ROUTINE split_str(str:STRING; sep:STRING; out:ARRAY[*] OF STRING) FROM strings
 ROUTINE char_count(str:STRING; char:STRING) : INTEGER FROM strings
 --do delimeter sanity check
 ROUTINE delim_check(d :STRING) FROM strings
+ROUTINE delim_strip(s : STRING; delim : STRING) : STRING FROM strings
 -- strip whitespace from left side of string
 ROUTINE lstrip(s : STRING)                : STRING FROM strings
 -- strip whitespace from right side of string
