@@ -91,6 +91,37 @@ ROUTINE char_count
     RETURN(count)
   END char_count
 
+ROUTINE str_parse
+  VAR
+    i,j : INTEGER
+    new_str : STRING[254]
+    c : STRING[2]
+  BEGIN
+    --loop through character by character
+    --if a newline char, or the string as past
+    --the max length reset line length counter
+    new_str = ''
+    j=1
+    FOR i=1 TO STR_LEN(str) DO
+      c = SUB_STR(str, i, 1)
+      IF (c=chr(13)) THEN
+        j = 0
+      ENDIF
+      IF (j >= max_length) THEN
+        --add a newine to the char
+        c = c + chr(13)
+        j = 0
+      ENDIF
+
+      new_str = new_str + c
+
+      j=j+1
+    ENDFOR
+
+    RETURN(new_str)
+
+  END str_parse
+
 -- strip whitespace from left side of string
 ROUTINE lstrip
   VAR

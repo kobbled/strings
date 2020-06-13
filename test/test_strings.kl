@@ -294,6 +294,24 @@ ROUTINE t_isint : BOOLEAN
            kunit_assert(strisint('2')) )
   END t_isint
 
+ROUTINE t_strparse : BOOLEAN
+  VAR
+    lnth : INTEGER
+    str : STRING[120]
+    out_str : STRING[120]
+  BEGIN
+    lnth = 30
+    str = 'This message is too long to fit on one line.'+ chr(13) + &
+          ' This string should be automatically split apart'+ & 
+          ' to fit on the display.'
+    --expected
+    out_str= 'This message is too long to fi'+ chr(13) +'t on one line.'+ chr(13) + &
+          ' This string should be automat'+ chr(13) +'ically split apart to fit on t'+ chr(13) + & 
+          'he display.'
+    
+    RETURN(kunit_eq_str(str_parse(str,lnth), out_str))
+  END t_strparse
+
 
 
 BEGIN
@@ -320,6 +338,7 @@ BEGIN
   kunit_test('string_register_retrieve', t_strreg)
   kunit_test('test if strings are reals', t_isreal)
   kunit_test('test if strings are ints', t_isint)
+  kunit_test('str_parse()', t_strparse)
 
   kunit_done
 END test_strings
