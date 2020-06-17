@@ -590,6 +590,27 @@ ROUTINE s_to_r
     RETURN(r)
   END s_to_r
 
+--binary string to a integer
+ROUTINE bin_to_i
+  VAR
+    i : INTEGER
+    num : INTEGER
+  BEGIN
+    num = 0
+    FOR i = STR_LEN(s) DOWNTO 1 DO
+      IF SUB_STR(s,i,1) = '1' THEN
+        num = num + TRUNC(EXP((STR_LEN(s)-i) * LN(2)))
+      ELSE IF SUB_STR(s,i,1) = '0' THEN
+        num = num
+      ELSE
+        WRITE TPERROR(s, ' is not a binary number')
+      ENDIF
+      ENDIF
+    ENDFOR
+
+    RETURN(num)
+  END bin_to_i
+
 --string to vector
 ROUTINE s_to_vec
   VAR

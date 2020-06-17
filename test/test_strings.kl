@@ -313,6 +313,14 @@ ROUTINE t_strparse : BOOLEAN
   END t_strparse
 
 
+ROUTINE t_binary : BOOLEAN
+  BEGIN
+    RETURN(kunit_eq_int(2, bin_to_i('10')) AND kunit_eq_int(255, bin_to_i('11111111')) &
+           AND kunit_eq_int(53, bin_to_i('110101')) AND kunit_eq_int(21, bin_to_i('10101')) &
+           AND kunit_eq_int(1, bin_to_i('1')) AND kunit_eq_int(0, bin_to_i('0')))
+  END t_binary
+
+
 
 BEGIN
   kunit_test('split_str()', t_split_str)
@@ -339,6 +347,7 @@ BEGIN
   kunit_test('test if strings are reals', t_isreal)
   kunit_test('test if strings are ints', t_isint)
   kunit_test('str_parse()', t_strparse)
+  kunit_test('binary string test', t_binary)
 
   kunit_done
 END test_strings

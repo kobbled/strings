@@ -69,6 +69,8 @@ ROUTINE strisint(s : STRING)               : BOOLEAN FROM strings
 ROUTINE s_to_i(s : STRING) 			        : INTEGER FROM strings
 --convert a string to real
 ROUTINE s_to_r(s : STRING) 			        : REAL FROM strings
+--convert binary string to a integer
+ROUTINE bin_to_i(s : STRING) : INTEGER FROM strings
 --convert string to vector
 ROUTINE s_to_vec(s: STRING; delim : STRING)   : VECTOR FROM strings
 --convert string to xyzwpr
