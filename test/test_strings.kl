@@ -321,6 +321,13 @@ ROUTINE t_binary : BOOLEAN
   END t_binary
 
 
+ROUTINE t_dec2bin : BOOLEAN
+  BEGIN
+    RETURN(kunit_eq_str('10', i_to_byte(2, FALSE)) AND kunit_eq_str('11111111', i_to_byte(255, FALSE)) &
+           AND kunit_eq_str('110101', i_to_byte(53, FALSE)) AND kunit_eq_str('10101', i_to_byte(21, FALSE)) & 
+           AND kunit_eq_str('101011', i_to_byte(53, TRUE)) AND kunit_eq_str('1011', i_to_byte(13, TRUE)) )
+  END t_dec2bin
+
 
 BEGIN
   kunit_test('split_str()', t_split_str)
@@ -348,6 +355,7 @@ BEGIN
   kunit_test('test if strings are ints', t_isint)
   kunit_test('str_parse()', t_strparse)
   kunit_test('binary string test', t_binary)
+  kunit_test('decimal to binary', t_dec2bin)
 
   kunit_done
 END test_strings

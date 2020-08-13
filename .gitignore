@@ -3,3 +3,4 @@ bin/*.pc
 *.pc
 robot*.ini
 build/
+strings2.kl

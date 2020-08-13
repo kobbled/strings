@@ -611,6 +611,31 @@ ROUTINE bin_to_i
     RETURN(num)
   END bin_to_i
 
+--integer to binary string
+ROUTINE i_to_byte
+  VAR
+    res : INTEGER
+    s : STRING[8]
+  BEGIN
+    --initialize string
+    s = ''
+    res = i
+    REPEAT
+      IF res MOD 2 = 1 THEN
+        IF msb THEN s = s + '1' ; ELSE s = '1' + s ; ENDIF
+      ELSE
+        IF msb THEN s = s + '0' ; ELSE s = '0' + s ; ENDIF
+      ENDIF
+
+      res = res DIV 2
+
+    UNTIL(res <= 0)
+
+    RETURN(s)
+
+  END i_to_byte
+
+
 --string to vector
 ROUTINE s_to_vec
   VAR

@@ -71,6 +71,8 @@ ROUTINE s_to_i(s : STRING) 			        : INTEGER FROM strings
 ROUTINE s_to_r(s : STRING) 			        : REAL FROM strings
 --convert binary string to a integer
 ROUTINE bin_to_i(s : STRING) : INTEGER FROM strings
+--convert integer to binary string
+ROUTINE i_to_byte(i : INTEGER; msb : BOOLEAN) : STRING FROM strings
 --convert string to vector
 ROUTINE s_to_vec(s: STRING; delim : STRING)   : VECTOR FROM strings
 --convert string to xyzwpr
