@@ -34,6 +34,29 @@ ROUTINE t_rev_split : BOOLEAN
       kunit_eq_str('C:',o[5]))
   END t_rev_split
 
+ROUTINE t_fnam_parse : BOOLEAN
+  VAR
+    s1 : STRING[30]
+    s2 : STRING[12]
+  BEGIN
+    s1 = 'FR:\user\name\folder\file.ext'
+    s2 = 'MC:kl6004.xml'
+
+    RETURN(kunit_eq_str('ext',get_ext(s1)) AND
+           kunit_eq_str('file',basename(splitext(s1)) ) AND
+           kunit_eq_str('kl6004',basename(splitext(s2)) ) AND
+           kunit_eq_str('FR',get_device(s1)) AND kunit_eq_str('MC',get_device(s2)) )
+  END t_fnam_parse
+
+ROUTINE t_progvar : BOOLEAN
+  BEGIN
+    RETURN(kunit_eq_str('prog',get_progname('[prog]var')) AND 
+           kunit_eq_str('var',get_varname('[prog]var')) AND 
+           kunit_eq_str('',get_progname('var[1]')) AND 
+           kunit_eq_str('var[1]',get_varname('var[1]')) AND
+           kunit_eq_str('var[1]',get_varname('[prog]var[1]')) )
+  END t_progvar
+
 ROUTINE t_char_cnt : BOOLEAN
   BEGIN
     RETURN(kunit_eq_int(4, char_count('one,two,three,four,', ',')) AND
@@ -356,8 +379,10 @@ BEGIN
   kunit_test('split string', t_split_str) --asserts 4
   t_splitStr
   kunit_test('reverse split string', t_rev_split) --asserts 5
+  kunit_test('file path parsing', t_fnam_parse) -- assert 5
   kunit_test('char_count()', t_char_cnt) --asserts 5
   kunit_test('remove char from string', t_remov) -- asserts 3
+  kunit_test('parsing [prog]var', t_progvar) -- asserts 5
   kunit_test('lstrip()', t_lstrip) --asserts 2
   kunit_test('rstrip()', t_rstrip) --asserts 3
   kunit_test('b_to_s()', t_b_to_s) --asserts 2

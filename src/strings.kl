@@ -209,6 +209,104 @@ ROUTINE rstrip
     RETURN(s)
   END rstrip
 
+ROUTINE splitext
+  VAR
+    split_arr : ARRAY[2] OF STRING[64]
+  BEGIN
+    rev_split(s, '.' , split_arr)
+    RETURN(split_arr[2])
+  END splitext
+
+ROUTINE get_ext
+  VAR
+    split_arr : ARRAY[2] OF STRING[4]
+  BEGIN
+    rev_split(s, '.' , split_arr)
+    RETURN(split_arr[1])
+  END get_ext
+
+ROUTINE get_device
+  VAR
+    split_arr : ARRAY[2] OF STRING[3]
+  BEGIN
+    split_str(s, ':\', split_arr)
+
+    IF split_arr[2] = '' THEN
+      split_str(s,':', split_arr)
+    ENDIF
+
+    RETURN(split_arr[1])
+  END get_device
+
+ROUTINE basename
+  VAR
+    split_arr : ARRAY[2] OF STRING[16]
+  BEGIN
+    rev_split(s, '\' , split_arr)
+    --if '\' was not found in string
+    IF split_arr[2] = '' THEN
+      --look for drive seperator
+      rev_split(s, ':' , split_arr)
+    ENDIF
+
+    RETURN(split_arr[1])
+  END basename
+
+ROUTINE get_progname
+  VAR
+    i, start, ed : INTEGER
+  BEGIN
+    start = 0; ed = 0;
+    FOR i = 1 TO (STR_LEN(s)-1) DO
+      IF (SUB_STR(s, i, 1)='[') THEN
+        --make sure you are not picking up an array index eg. var[1]
+        IF charisnum(SUB_STR(s, i+1, 1)) THEN
+          GO TO SKP_PROG_NAM
+        ENDIF
+        start = i + 1
+      ENDIF
+      IF (SUB_STR(s, i, 1)=']') THEN
+        ed = i - 1
+        GO TO SKP_PROG_NAM
+      ENDIF
+    ENDFOR
+SKP_PROG_NAM::
+
+    IF ((start = 0) OR (ed = 0)) THEN
+      RETURN('')
+    ENDIF
+
+    RETURN(SUB_STR(s, start, ed-start+1))
+
+  END get_progname
+
+ROUTINE get_varname
+  VAR
+    i, start : INTEGER
+  BEGIN
+    start = 0
+    FOR i = 1 TO (STR_LEN(s)-1) DO
+      --make sure you are not picking up an array index eg. var[1]
+      IF (SUB_STR(s, i, 1)='[') THEN
+        IF charisnum(SUB_STR(s, i+1, 1)) THEN
+          GO TO SKP_VAR_NAM
+        ENDIF
+      ENDIF
+      IF (SUB_STR(s, i, 1)=']') THEN
+        start = i + 1
+        GO TO SKP_VAR_NAM
+      ENDIF
+    ENDFOR
+SKP_VAR_NAM::
+
+    IF (start = 0) THEN
+      RETURN(s)
+    ENDIF
+
+    RETURN(SUB_STR(s, start, STR_LEN(s) ))
+  END get_varname
+
+
 ROUTINE b_to_s
   BEGIN
     IF b THEN

@@ -26,6 +26,18 @@ ROUTINE delim_strip(s : STRING; delim : STRING) : STRING FROM strings
 ROUTINE lstrip(s : STRING)                : STRING FROM strings
 -- strip whitespace from right side of string
 ROUTINE rstrip(s : STRING)                : STRING FROM strings
+-- get file name without extension
+ROUTINE splitext(s : STRING) : STRING FROM strings
+-- get file extension
+ROUTINE get_ext(s : STRING) : STRING FROM strings
+-- get device from path
+ROUTINE get_device(s : STRING) : STRING FROM strings
+-- get file name without path
+ROUTINE basename(s : STRING) : STRING FROM strings
+-- extract program name and variable name from '[progname]varname'
+ROUTINE get_progname(s : STRING) : STRING FROM strings
+ROUTINE get_varname(s : STRING) : STRING FROM strings
+
 --converts a boolean value into string
 ROUTINE b_to_s(b : BOOLEAN)               : STRING FROM strings
 --converts an integer value into string
