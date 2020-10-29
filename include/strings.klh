@@ -11,7 +11,11 @@
 --   # => ['one','two','three','','',...,'']
 -- Returns:  an ARRAY[16] of STRING[16]
 ROUTINE split_str(str:STRING; sep:STRING; out:ARRAY[*] OF STRING) FROM strings
+-- split, search from the end to the start of the string
+ROUTINE rev_split(str:STRING; sep:STRING; out:ARRAY[*] OF STRING) FROM strings
 ROUTINE char_count(str:STRING; char:STRING) : INTEGER FROM strings
+--remove char from string
+ROUTINE remove_char(str:STRING; char:STRING) : STRING FROM strings
 --handle string overflow by splitting the string to a new line
 --if more than specified length
 ROUTINE str_parse(str:STRING ; max_length : INTEGER) : STRING FROM strings

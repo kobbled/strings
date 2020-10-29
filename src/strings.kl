@@ -50,7 +50,7 @@ ROUTINE split_str
   VAR
     i   : INTEGER
     k   : INTEGER
-	start    : INTEGER
+	  start : INTEGER
   BEGIN
     k = 1
 
@@ -59,22 +59,57 @@ ROUTINE split_str
       out[i] = ''
     ENDFOR
 
-	start = 1
+	  start = 1
 
     FOR i = 1 TO (STR_LEN(str)-STR_LEN(sep)) DO
-		IF (SUB_STR(str, i, STR_LEN(sep))=sep) THEN
-			out[k] = SUB_STR(str, start, (i-start))
-			k = k + 1
-			start = i+STR_LEN(sep)
-      IF (k > array_len(out)-1) THEN
-        GO TO SKIP_SPLT
+      IF (SUB_STR(str, i, STR_LEN(sep))=sep) THEN
+        out[k] = SUB_STR(str, start, (i-start))
+        k = k + 1
+        start = i+STR_LEN(sep)
+        IF (k > array_len(out)-1) THEN
+          GO TO SKIP_SPLT
+        ENDIF
       ENDIF
-		ENDIF
     ENDFOR
     SKIP_SPLT::
 
-	out[k] = SUB_STR(str, start, (STR_LEN(str)-start+1))
+	  out[k] = SUB_STR(str, start, (STR_LEN(str)-start+1))
   END split_str
+
+ROUTINE rev_split
+  VAR
+    i   : INTEGER
+    k   : INTEGER
+	  ed : INTEGER
+  BEGIN
+    k = 1
+
+    -- initialize the whole out array to ''
+    FOR i = 1 TO ARRAY_LEN(out) DO
+      out[i] = ''
+    ENDFOR
+
+	  ed = STR_LEN(str) + 1
+
+    FOR i = STR_LEN(str) DOWNTO (1+STR_LEN(sep)) DO
+      IF (SUB_STR(str, i-STR_LEN(sep), STR_LEN(sep))=sep) THEN
+          out[k] = SUB_STR(str, i, ed-i)
+          k = k + 1
+          ed = i-STR_LEN(sep)
+          IF (k > array_len(out)-1) THEN
+            GO TO SKP_REV_SPLT
+          ENDIF
+      ENDIF
+    ENDFOR
+    SKP_REV_SPLT::
+    
+    IF (SUB_STR(str, ed, STR_LEN(sep))=sep) THEN
+      out[k] = SUB_STR(str, 1, ed-1)
+    ELSE
+      out[k] = SUB_STR(str, 1, ed)
+    ENDIF
+
+  END rev_split
 
 ROUTINE char_count
   VAR
@@ -91,10 +126,34 @@ ROUTINE char_count
     RETURN(count)
   END char_count
 
+ROUTINE remove_char
+  VAR
+    i   : INTEGER
+    count : INTEGER
+    new_str : STRING[128]
+  BEGIN
+    FOR i = 1 TO (STR_LEN(str)-STR_LEN(char)+1) DO
+      IF (SUB_STR(str, i, STR_LEN(char))=char) THEN
+        --before char
+        IF i > 1 THEN
+          new_str = SUB_STR(str, 1, (i-1))
+        ELSE
+          new_str = ''
+        ENDIF
+        --after char
+        IF ((i+STR_LEN(char)) < STR_LEN(str)) THEN
+          new_str = new_str + SUB_STR(str, (i+STR_LEN(char)), (STR_LEN(str)-STR_LEN(char)-i+1) )
+        ENDIF
+      ENDIF
+    ENDFOR
+
+    RETURN(new_str)
+  END remove_char
+
 ROUTINE str_parse
   VAR
     i,j : INTEGER
-    new_str : STRING[254]
+    new_str : STRING[128]
     c : STRING[2]
   BEGIN
     --loop through character by character
@@ -213,7 +272,7 @@ ROUTINE r_to_s
 
 ROUTINE rarr_to_s
   VAR
-    s : STRING[254]
+    s : STRING[128]
     i : INTEGER
   BEGIN
     FOR i=1 TO ARRAY_LEN(arr) DO
@@ -228,7 +287,7 @@ ROUTINE rarr_to_s
 
 ROUTINE iarr_to_s
   VAR
-    s : STRING[254]
+    s : STRING[128]
     i : INTEGER
   BEGIN
     FOR i=1 TO ARRAY_LEN(arr) DO
@@ -243,7 +302,7 @@ ROUTINE iarr_to_s
 
 ROUTINE rarr2d_to_s
   VAR
-    s : STRING[254]
+    s : STRING[128]
     i,j : INTEGER
   BEGIN
     s = ''
@@ -367,7 +426,7 @@ VAR
 ROUTINE esc_quotes
   VAR
     i : INTEGER
-    r : STRING[254]
+    r : STRING[128]
     c : STRING[1]
   BEGIN
     r = ''

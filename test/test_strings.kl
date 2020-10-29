@@ -19,6 +19,21 @@ ROUTINE t_split_str : BOOLEAN
       kunit_eq_str('',o[4]))
   END t_split_str
 
+ROUTINE t_rev_split : BOOLEAN
+  VAR
+    s : STRING[30]
+    o : ARRAY[5] OF STRING[10]
+  BEGIN
+    s = 'C:\user\name\folder\file.ext'
+    rev_split(s,'\',o)
+
+    RETURN(kunit_eq_str('file.ext',o[1]) AND
+      kunit_eq_str('folder',o[2]) AND
+      kunit_eq_str('name',o[3]) AND
+      kunit_eq_str('user',o[4]) AND
+      kunit_eq_str('C:',o[5]))
+  END t_rev_split
+
 ROUTINE t_char_cnt : BOOLEAN
   BEGIN
     RETURN(kunit_eq_int(4, char_count('one,two,three,four,', ',')) AND
@@ -27,6 +42,13 @@ ROUTINE t_char_cnt : BOOLEAN
           kunit_eq_int(2,char_count('....F......F...', 'F')) AND
           kunit_eq_int(0,char_count('....F......F...', '*')))
   END t_char_cnt
+
+ROUTINE t_remov : BOOLEAN
+  BEGIN
+    RETURN(kunit_eq_str(',two,three', remove_char('one,two,three', 'one')) AND
+           kunit_eq_str('one,,three', remove_char('one,two,three', 'two')) AND
+           kunit_eq_str('one,two,', remove_char('one,two,three', 'three')) )
+  END t_remov
 
 ROUTINE t_lstrip : BOOLEAN
   BEGIN
@@ -117,7 +139,7 @@ ROUTINE t_joint2str : BOOLEAN
       RETURN(FALSE)
     ENDIF
 
-    jointstr = joint_to_s(pose, ',')
+    jointstr = joint_to_s((pose), ',')
     RETURN(kunit_eq_str('10.0,30.0,190.0,-90.0,0.0,180.0', jointstr))
 
   END t_joint2str
@@ -330,32 +352,36 @@ ROUTINE t_dec2bin : BOOLEAN
 
 
 BEGIN
-  kunit_test('split_str()', t_split_str)
-  kunit_test('char_count()', t_char_cnt)
-  kunit_test('lstrip()', t_lstrip)
-  kunit_test('rstrip()', t_rstrip)
-  kunit_test('b_to_s()', t_b_to_s)
-  kunit_test('i_to_s()', t_i_to_s)
-  kunit_test('r_to_s()', t_r_to_s)
-  kunit_test('p_to_s()', t_p_to_s)
-  kunit_test('pose2delim_str()', t_delim_pos)
-  kunit_test('v_to_s()', t_vec2str)
-  kunit_test('joint2str()',t_joint2str)
-  kunit_test('str2joint()',t_str2joint)
-  kunit_test('esc_quotes()', t_esc_quotes)
-  kunit_test('search_str()',t_search_str)
-  kunit_test('number_char()',t_num_char)
-  kunit_test('str2int()',t_str2int)
-  kunit_test('str2real()',t_str2real)
-  kunit_test('real_array_from_str()',t_str2rarr)
-  kunit_test('numreg_to_str', t_numreg2s)
-  kunit_test('posreg_to_str', t_posreg2s)
-  kunit_test('string_register_retrieve', t_strreg)
-  kunit_test('test if strings are reals', t_isreal)
-  kunit_test('test if strings are ints', t_isint)
-  kunit_test('str_parse()', t_strparse)
-  kunit_test('binary string test', t_binary)
-  kunit_test('decimal to binary', t_dec2bin)
+  --total asserts 96
+  kunit_test('split string', t_split_str) --asserts 4
+  t_splitStr
+  kunit_test('reverse split string', t_rev_split) --asserts 5
+  kunit_test('char_count()', t_char_cnt) --asserts 5
+  kunit_test('remove char from string', t_remov) -- asserts 3
+  kunit_test('lstrip()', t_lstrip) --asserts 2
+  kunit_test('rstrip()', t_rstrip) --asserts 3
+  kunit_test('b_to_s()', t_b_to_s) --asserts 2
+  kunit_test('i_to_s()', t_i_to_s) --asserts 2
+  kunit_test('r_to_s()', t_r_to_s) --asserts 5
+  kunit_test('p_to_s()', t_p_to_s) --asserts 2
+  kunit_test('pose2delim_str()', t_delim_pos) --asserts 1
+  kunit_test('v_to_s()', t_vec2str) --asserts 1
+  kunit_test('joint2str()',t_joint2str) --asserts 1
+  kunit_test('str2joint()',t_str2joint) --asserts 4
+  kunit_test('esc_quotes()', t_esc_quotes) --asserts 1
+  kunit_test('search_str()',t_search_str) --asserts 3
+  kunit_test('number_char()',t_num_char) --asserts 4
+  kunit_test('str2int()',t_str2int) --asserts 4
+  kunit_test('str2real()',t_str2real) --asserts 2
+  kunit_test('real_array_from_str()',t_str2rarr) --asserts 6
+  kunit_test('numreg_to_str', t_numreg2s) --asserts 1
+  kunit_test('posreg_to_str', t_posreg2s) --asserts 1
+  kunit_test('string_register_retrieve', t_strreg) --asserts 1
+  kunit_test('test if strings are reals', t_isreal) --asserts 9
+  kunit_test('test if strings are ints', t_isint) --asserts 5
+  kunit_test('str_parse()', t_strparse) --asserts 1
+  kunit_test('binary string test', t_binary) --asserts 6
+  kunit_test('decimal to binary', t_dec2bin) --asserts 6
 
   kunit_done
 END test_strings
