@@ -67,14 +67,36 @@ ROUTINE split_str
         k = k + 1
         start = i+STR_LEN(sep)
         IF (k > array_len(out)-1) THEN
-          GO TO SKIP_SPLT
+          out[k] = SUB_STR(str, start, (STR_LEN(str)-start+1))
+          RETURN
         ENDIF
       ENDIF
     ENDFOR
-    SKIP_SPLT::
 
 	  out[k] = SUB_STR(str, start, (STR_LEN(str)-start+1))
   END split_str
+
+ROUTINE extract_str
+  VAR
+    i, j : INTEGER
+    count : INTEGER
+  BEGIN
+    count = 1
+    -- j = end of string , i = start of string
+    j = 1
+    FOR i = 1 TO (STR_LEN(str)-STR_LEN(sep)) DO
+      IF (SUB_STR(str, i, STR_LEN(sep))=sep) THEN
+        IF (idx = count) THEN
+          RETURN(SUB_STR(str, j, i-j))
+        ENDIF
+        count = count + 1
+        j = i + 1
+      ENDIF
+    ENDFOR
+
+    RETURN(SUB_STR(str, j, (STR_LEN(str)-j+1) ))
+  END extract_str
+
 
 ROUTINE rev_split
   VAR

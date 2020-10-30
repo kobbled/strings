@@ -19,6 +19,13 @@ ROUTINE t_split_str : BOOLEAN
       kunit_eq_str('',o[4]))
   END t_split_str
 
+ROUTINE t_extrat_str : BOOLEAN
+  BEGIN
+    RETURN(kunit_eq_str('one', extract_str('one,two,three', ',', 1)) AND
+           kunit_eq_str('two', extract_str('one,two,three', ',', 2)) AND
+           kunit_eq_str('three', extract_str('one,two,three', ',', 3))  )
+  END t_extrat_str
+
 ROUTINE t_rev_split : BOOLEAN
   VAR
     s : STRING[30]
@@ -70,7 +77,8 @@ ROUTINE t_remov : BOOLEAN
   BEGIN
     RETURN(kunit_eq_str(',two,three', remove_char('one,two,three', 'one')) AND
            kunit_eq_str('one,,three', remove_char('one,two,three', 'two')) AND
-           kunit_eq_str('one,two,', remove_char('one,two,three', 'three')) )
+           kunit_eq_str('one,two,', remove_char('one,two,three', 'three')) AND 
+           kunit_eq_str('one,one,', remove_char('one,one,one', 'one')) )
   END t_remov
 
 ROUTINE t_lstrip : BOOLEAN
@@ -375,13 +383,14 @@ ROUTINE t_dec2bin : BOOLEAN
 
 
 BEGIN
-  --total asserts 96
+  --total asserts 100
   kunit_test('split string', t_split_str) --asserts 4
+  kunit_test('extract string', t_extrat_str) --asserts 4
   t_splitStr
   kunit_test('reverse split string', t_rev_split) --asserts 5
   kunit_test('file path parsing', t_fnam_parse) -- assert 5
   kunit_test('char_count()', t_char_cnt) --asserts 5
-  kunit_test('remove char from string', t_remov) -- asserts 3
+  kunit_test('remove char from string', t_remov) -- asserts 4
   kunit_test('parsing [prog]var', t_progvar) -- asserts 5
   kunit_test('lstrip()', t_lstrip) --asserts 2
   kunit_test('rstrip()', t_rstrip) --asserts 3
