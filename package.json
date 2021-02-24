@@ -14,7 +14,7 @@
   "includes" : [
     "include"
   ],
-  "depends" : [
+  "tests-depends" : [
     "KUnit"
   ]
 }
