@@ -529,16 +529,16 @@ VAR
     CNV_CONF_STR(p.config_data, configstr)
 
     IF (UNINIT(grp_no)) OR (grp_no <= 0) THEN
-        RETURN('UF : '+ i_to_s(uframe_no) +', UT : '+ i_to_s(utool_no) +',' & 
-            + '  CONFIG : '+ configstr + chr(13) &
-            + 'X = '+ r_to_s(p.x) +'mm, Y = '+ r_to_s(p.y) + 'mm, Z = '+ r_to_s(p.z) +'mm, '+ chr(13) &
-            + 'W = '+ r_to_s(p.w) +'deg, P = '+ r_to_s(p.p) +'deg, R = '+ r_to_s(p.r) +'deg')
+        RETURN('UF:'+ i_to_s(uframe_no) +',UT:'+ i_to_s(utool_no) +',' & 
+            + 'CONFIG:'+ configstr + chr(13) &
+            + 'X='+ r_to_s(p.x) +'mm, Y='+ r_to_s(p.y) + 'mm, Z='+ r_to_s(p.z) +'mm, '+ chr(13) &
+            + 'W='+ r_to_s(p.w) +'deg, P='+ r_to_s(p.p) +'deg, R='+ r_to_s(p.r) +'deg')
     ELSE
-        RETURN('GP' + i_to_s(grp_no) + ':' + chr(13) &
-            + 'UF : '+ i_to_s(uframe_no) +', UT : '+ i_to_s(utool_no) +',' & 
-            + '  CONFIG : '+ configstr + chr(13) &
-            + 'X = '+ r_to_s(p.x) +'mm, Y = '+ r_to_s(p.y) + 'mm, Z = '+ r_to_s(p.z) +'mm, '+ chr(13) &
-            + 'W = '+ r_to_s(p.w) +'deg, P = '+ r_to_s(p.p) +'deg, R = '+ r_to_s(p.r) +'deg')
+        RETURN('GP' + i_to_s(grp_no) + ':' &
+            + 'UF:'+ i_to_s(uframe_no) +',UT:'+ i_to_s(utool_no) +',' & 
+            + 'CONFIG:'+ configstr + chr(13) &
+            + 'X='+ r_to_s(p.x) +'mm, Y='+ r_to_s(p.y) + 'mm, Z='+ r_to_s(p.z) +'mm, '+ chr(13) &
+            + 'W='+ r_to_s(p.w) +'deg, P='+ r_to_s(p.p) +'deg, R='+ r_to_s(p.r) +'deg')
     ENDIF
   END p_to_s_conf
 
