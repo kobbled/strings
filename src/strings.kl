@@ -150,24 +150,31 @@ ROUTINE char_count
 
 ROUTINE remove_char
   VAR
-    i   : INTEGER
-    count : INTEGER
-    new_str : STRING[128]
+    i, j  : INTEGER
+    new_str : STRING[64]
   BEGIN
-    FOR i = 1 TO (STR_LEN(str)-STR_LEN(char)+1) DO
+    new_str = ''
+    --right edge, left edge
+    --rolling window through string
+    --extract everything that isn't 'char'
+    i=1; j=1
+    WHILE ( i <= (STR_LEN(str)-STR_LEN(char)+1)) DO
       IF (SUB_STR(str, i, STR_LEN(char))=char) THEN
-        --before char
         IF i > 1 THEN
-          new_str = SUB_STR(str, 1, (i-1))
-        ELSE
-          new_str = ''
+          new_str = new_str + SUB_STR(str, j, (i-j))
         ENDIF
-        --after char
-        IF ((i+STR_LEN(char)) < STR_LEN(str)) THEN
-          new_str = new_str + SUB_STR(str, (i+STR_LEN(char)), (STR_LEN(str)-STR_LEN(char)-i+1) )
-        ENDIF
+        i = i + STR_LEN(char)
+        --update left counter
+        j = i
+      ELSE
+        i = i + 1
       ENDIF
-    ENDFOR
+    ENDWHILE
+
+    --add in leftover
+    IF j <= STR_LEN(str) THEN
+      new_str = new_str + SUB_STR(str, j, STR_LEN(str)-j+1)
+    ENDIF
 
     RETURN(new_str)
   END remove_char

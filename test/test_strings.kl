@@ -78,7 +78,8 @@ ROUTINE t_remov : BOOLEAN
     RETURN(kunit_eq_str(',two,three', remove_char('one,two,three', 'one')) AND
            kunit_eq_str('one,,three', remove_char('one,two,three', 'two')) AND
            kunit_eq_str('one,two,', remove_char('one,two,three', 'three')) AND 
-           kunit_eq_str('one,one,', remove_char('one,one,one', 'one')) )
+           kunit_eq_str(',,', remove_char('one,one,one', 'one')) AND
+           kunit_eq_str('FUT-1,0,1', remove_char('F U T -1, 0, 1', ' ')) )
   END t_remov
 
 ROUTINE t_lstrip : BOOLEAN
