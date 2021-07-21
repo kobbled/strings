@@ -327,7 +327,7 @@ ROUTINE t_posreg2s : BOOLEAN
       RETURN(FALSE)
     ENDIF
     --compare expected to retrieved
-    RETURN(kunit_eq_str(p_to_s_conf(expected, 1, uframe, utool), &
+    RETURN(kunit_eq_str(posecfg2str(expected, 1), &
            posreg_to_s(reg_no, 1)))
   END t_posreg2s
 

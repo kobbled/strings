@@ -59,6 +59,8 @@ ROUTINE rarr2d_to_s(arr : ARRAY[*,*] OF REAL; row : ARRAY[*] OF REAL; row_delim,
 ROUTINE p_to_s(p : XYZWPR)                : STRING FROM strings
 -- convert joint into a deliminated string
 ROUTINE pose_to_s(p : XYZWPR; delim : STRING)            : STRING FROM strings
+-- compact pose string including config, and pose info
+ROUTINE posecfg2str(p : XYZWPR; grp_no : INTEGER)            : STRING FROM strings
 --convert vector to string
 ROUTINE vec_to_s(v: VECTOR; delim : STRING)   : STRING FROM strings
 -- convert joint into a deliminated string

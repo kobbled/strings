@@ -462,6 +462,20 @@ ROUTINE pose_to_s
 
    END pose_to_s
 
+ROUTINE posecfg2str
+  VAR
+    configstr : STRING[25]
+  BEGIN
+    --convert config to string
+    CNV_CONF_STR(p.config_data, configstr)
+    configstr = remove_char(configstr, chr(32))
+
+    RETURN('GP' + i_to_s(grp_no) + ': '+ configstr &
+        + ' :' + chr(13) + r_to_s(p.x) +','+ r_to_s(p.y) + ','+ r_to_s(p.z) +',' &
+        + r_to_s(p.w) +','+ r_to_s(p.p) +','+ r_to_s(p.r) )
+
+  END posecfg2str
+
 ROUTINE vec_to_s
   BEGIN
 
@@ -1057,7 +1071,7 @@ ROUTINE posreg_to_s
                     i_to_s(reg_no), ']')
         ENDIF
         -- return as string
-        RETURN(p_to_s_conf(xyz, grp_no, ($MNUFRAMENUM[grp_no]), ($MNUTOOLNUM[grp_no])))
+        RETURN(posecfg2str(xyz, grp_no))
       -- joint rep
       CASE (9) :
         -- get position register as JOINTPOS
