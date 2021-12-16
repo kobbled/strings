@@ -361,12 +361,13 @@ ROUTINE r_to_s
   VAR
     s : STRING[16]
     i : INTEGER
+%define DECIMAL_PLACES 1
   BEGIN
     IF UNINIT(r) THEN
       RETURN('null')
     ENDIF
 
-    CNV_REAL_STR(r, 0, 3, s)
+    CNV_REAL_STR(r, 0, DECIMAL_PLACES, s)
     s = lstrip(s)
 
     -- fix -.234 issue
