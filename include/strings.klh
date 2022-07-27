@@ -13,7 +13,7 @@
 ROUTINE split_str(str:STRING; sep:STRING; out:ARRAY[*] OF STRING) FROM strings
 -- Split string in an outer loop without having to declare array size
 -- will store as string
-ROUTINE extract_str(str:STRING; sep:STRING; idx : INTEGER) : STRING FROM strings
+ROUTINE extract_str(str:STRING; sep:STRING; start_idx, stop_idx : INTEGER) : STRING FROM strings
 -- split, search from the end to the start of the string
 ROUTINE rev_split(str:STRING; sep:STRING; out:ARRAY[*] OF STRING) FROM strings
 ROUTINE char_count(str:STRING; char:STRING) : INTEGER FROM strings

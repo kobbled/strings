@@ -79,16 +79,24 @@ ROUTINE split_str
 ROUTINE extract_str
   VAR
     i, j : INTEGER
+    s, f : INTEGER
     count : INTEGER
   BEGIN
     count = 1
-    -- j = end of string , i = start of string
+    -- j = start of string , i = end of string
     j = 1
     FOR i = 1 TO (STR_LEN(str)-STR_LEN(sep)) DO
       IF (SUB_STR(str, i, STR_LEN(sep))=sep) THEN
-        IF (idx = count) THEN
-          RETURN(SUB_STR(str, j, i-j))
+        --select start index
+        IF (count = start_idx) THEN
+          s = j
         ENDIF
+        --select end index
+        IF (count = stop_idx) OR (i=(STR_LEN(str)-STR_LEN(sep))) THEN
+          f = i
+          RETURN(SUB_STR(str, s, f-s))
+        ENDIF
+
         count = count + 1
         j = i + 1
       ENDIF
