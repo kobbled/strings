@@ -369,7 +369,7 @@ ROUTINE r_to_s
   VAR
     s : STRING[16]
     i : INTEGER
-%define DECIMAL_PLACES 1
+%define DECIMAL_PLACES 3
   BEGIN
     IF UNINIT(r) THEN
       RETURN('null')

@@ -2,6 +2,11 @@ PROGRAM test_strings
 %NOLOCKGROUP
 
 %include strings.klt
+
+VAR
+  str_glob : STRING[128]
+  str_glob_res  : STRING[128]
+
 %include strings.klh
 %include kunit.klh
 
@@ -21,9 +26,12 @@ ROUTINE t_split_str : BOOLEAN
 
 ROUTINE t_extrat_str : BOOLEAN
   BEGIN
-    RETURN(kunit_eq_str('one', extract_str('one,two,three', ',', 1)) AND
-           kunit_eq_str('two', extract_str('one,two,three', ',', 2)) AND
-           kunit_eq_str('three', extract_str('one,two,three', ',', 3))  )
+    str_glob = 'one,two,three,four,five,six,seven,eight,nine,ten'
+    RETURN(kunit_eq_str('one', extract_str(str_glob, ',', 1, 1)) AND
+           kunit_eq_str('two', extract_str(str_glob, ',', 2, 2)) AND
+           kunit_eq_str('three', extract_str(str_glob, ',', 3,3)) AND 
+           kunit_eq_str('one,two,three,four', extract_str(str_glob, ',', 1,4)) AND
+           kunit_eq_str('four,five,six,seven,eight', extract_str(str_glob, ',', 4,8)) )
   END t_extrat_str
 
 ROUTINE t_rev_split : BOOLEAN
@@ -113,7 +121,7 @@ ROUTINE t_r_to_s : BOOLEAN
       kunit_eq_str('1.234', r_to_s(1.234)) AND
       kunit_eq_str('-3.14', r_to_s(-3.14)) AND
       kunit_eq_str('0.5', r_to_s(0.5)) AND
-      kunit_eq_str('10.0', r_to_s(10.000)))
+      kunit_eq_str('10.0', r_to_s(10.0)))
   END t_r_to_s
 
 ROUTINE t_p_to_s : BOOLEAN
@@ -245,14 +253,13 @@ ROUTINE t_str2real : BOOLEAN
 
 ROUTINE t_str2rarr : BOOLEAN
   VAR
-    rstr : STRING[90]
     r_arr : ARRAY[18] OF REAL
     b : BOOLEAN
   BEGIN
-    rstr = '3.21,1.09,5.5,6.00,1.111,8,2.718,3.14159,6.02,111.123'
-    rstr = rstr + ',-6.38,1E5,6.626E1,1.618,2,3,9.81,1.0'
+    str_glob = '3.21,1.09,5.5,6.00,1.111,8,2.718,3.14159,6.02,111.123'
+    str_glob = str_glob + ',-6.38,1E5,6.626E1,1.618,2,3,9.81,1.0'
 
-    s_to_rarr(rstr, ',', r_arr)
+    s_to_rarr(str_glob, ',', r_arr)
 
     RETURN(kunit_eq_r(3.21, r_arr[1]) AND kunit_eq_r(5.5, r_arr[3]) AND
           kunit_eq_r(3.14159, r_arr[8]) AND kunit_eq_r(-6.38, r_arr[11]) AND
@@ -351,19 +358,17 @@ ROUTINE t_isint : BOOLEAN
 ROUTINE t_strparse : BOOLEAN
   VAR
     lnth : INTEGER
-    str : STRING[120]
-    out_str : STRING[120]
   BEGIN
     lnth = 30
-    str = 'This message is too long to fit on one line.'+ chr(13) + &
+    str_glob = 'This message is too long to fit on one line.'+ chr(13) + &
           ' This string should be automatically split apart'+ & 
           ' to fit on the display.'
     --expected
-    out_str= 'This message is too long to fi'+ chr(13) +'t on one line.'+ chr(13) + &
+    str_glob_res = 'This message is too long to fi'+ chr(13) +'t on one line.'+ chr(13) + &
           ' This string should be automat'+ chr(13) +'ically split apart to fit on t'+ chr(13) + & 
           'he display.'
     
-    RETURN(kunit_eq_str(str_parse(str,lnth), out_str))
+    RETURN(kunit_eq_str(str_parse(str_glob,lnth), str_glob_res))
   END t_strparse
 
 
