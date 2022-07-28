@@ -411,10 +411,13 @@ ROUTINE rarr_to_s
     s : STRING[128]
     i : INTEGER
   BEGIN
+    s = ''
     FOR i=1 TO ARRAY_LEN(arr) DO
-      s = s + r_to_s(arr[i])
-      IF i < ARRAY_LEN(arr) THEN
-        s = s + delim
+      IF (NOT UNINIT(arr[i])) THEN
+        s = s + r_to_s(arr[i])
+        IF i < ARRAY_LEN(arr) THEN
+          s = s + delim
+        ENDIF
       ENDIF
     ENDFOR
 
@@ -426,15 +429,36 @@ ROUTINE iarr_to_s
     s : STRING[128]
     i : INTEGER
   BEGIN
+    s = ''
     FOR i=1 TO ARRAY_LEN(arr) DO
-      s = s + i_to_s(arr[i])
-      IF i < ARRAY_LEN(arr) THEN
-        s = s + delim
+      IF (NOT UNINIT(arr[i])) THEN
+        s = s + i_to_s(arr[i])
+        IF i < ARRAY_LEN(arr) THEN
+          s = s + delim
+        ENDIF
       ENDIF
     ENDFOR
 
     RETURN(s)
   END iarr_to_s
+
+ROUTINE sarr_to_s
+  VAR
+    s : STRING[128]
+    i : INTEGER
+  BEGIN
+    s = ''
+    FOR i=1 TO ARRAY_LEN(arr) DO
+      IF (NOT ( arr[i] = '') AND NOT UNINIT(arr[i])) THEN
+        s = s + arr[i]
+        IF i < ARRAY_LEN(arr) THEN
+          s = s + delim
+        ENDIF
+      ENDIF
+    ENDFOR
+
+    RETURN(s)
+  END sarr_to_s
 
 ROUTINE rarr2d_to_s
   VAR

@@ -50,6 +50,7 @@ ROUTINE r_to_s(r : REAL)                  : STRING FROM strings
 --array to a string seperated by character delim
 ROUTINE rarr_to_s(arr : ARRAY[*] OF REAL; delim : STRING) : STRING FROM strings
 ROUTINE iarr_to_s(arr : ARRAY[*] OF INTEGER; delim : STRING) : STRING FROM strings
+ROUTINE sarr_to_s(arr : ARRAY[*] OF STRING; delim : STRING) : STRING FROM strings
 --2d array to a string seperated by character delim
 ROUTINE rarr2d_to_s(arr : ARRAY[*,*] OF REAL; row : ARRAY[*] OF REAL; row_delim, col_delim : STRING) : STRING FROM strings
 -- converts a position to a formatted string
