@@ -27,8 +27,10 @@ ROUTINE delim_check(d :STRING) FROM strings
 ROUTINE delim_strip(s : STRING; delim : STRING) : STRING FROM strings
 -- strip whitespace from left side of string
 ROUTINE lstrip(s : STRING)                : STRING FROM strings
+ROUTINE lstripChar(s : STRING; char : STRING) : STRING FROM strings
 -- strip whitespace from right side of string
 ROUTINE rstrip(s : STRING)                : STRING FROM strings
+ROUTINE rstripChar(s : STRING; char : STRING) : STRING FROM strings
 -- get file name without extension
 ROUTINE splitext(s : STRING) : STRING FROM strings
 -- get file extension

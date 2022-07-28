@@ -232,6 +232,19 @@ ROUTINE lstrip
     RETURN(s)
   END lstrip
 
+ROUTINE lstripChar
+  VAR
+    i : INTEGER
+  BEGIN
+    FOR i = 1 TO STR_LEN(s) DO
+      IF SUB_STR(s,i,1) <> char THEN
+        RETURN(SUB_STR(s,i,STR_LEN(s)))
+      ENDIF
+    ENDFOR
+
+    RETURN(s)
+  END lstripChar
+
 -- strip whitespace from right side of string
 ROUTINE rstrip
   VAR
@@ -245,6 +258,19 @@ ROUTINE rstrip
 
     RETURN(s)
   END rstrip
+
+ROUTINE rstripChar
+  VAR
+    i : INTEGER
+  BEGIN
+    FOR i = STR_LEN(s) DOWNTO 1 DO
+      IF SUB_STR(s,i,1) <> char THEN
+        RETURN(SUB_STR(s,1,i))
+      ENDIF
+    ENDFOR
+
+    RETURN(s)
+  END rstripChar
 
 ROUTINE splitext
   VAR
