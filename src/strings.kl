@@ -799,6 +799,30 @@ ROUTINE s_to_r
     RETURN(r)
   END s_to_r
 
+ROUTINE s_to_b
+  BEGIN
+    IF (s = 'TRUE') OR (s = 'true') OR (s = '1') THEN
+      RETURN(TRUE)
+    ENDIF
+
+    IF (s = 'FALSE') OR (s = 'false') OR (s = '0') THEN
+      RETURN(FALSE)
+    ENDIF
+
+    WRITE TPERROR('string is not a boolean value')
+    RETURN(FALSE)
+
+  END s_to_b
+
+ROUTINE s_to_config
+  VAR
+    cnfg : CONFIG
+    STATUS : INTEGER
+  BEGIN
+    CNV_STR_CONF(conf_str, cnfg, STATUS)
+    RETURN(cnfg)
+  END s_to_config
+
 --binary string to a integer
 ROUTINE bin_to_i
   VAR

@@ -73,8 +73,7 @@ ROUTINE s_to_joint(s : STRING; delim : STRING)            : JOINTPOS FROM string
 -- UF : 1, UT : 2,  CONFIG : 'F U T, 0, 0, 0',
 -- X = 1.0 mm, Y = 2.0 mm, Z = 3.0 mm,
 -- W = 90.0 deg, P = 90.0 deg, R = 180.0 deg
-ROUTINE p_to_s_conf(p : XYZWPREXT; grp_no : INTEGER; uframe_no : INTEGER; & 
-                  utool_no : INTEGER) : STRING FROM strings
+ROUTINE p_to_s_conf(p : XYZWPREXT; grp_no : INTEGER; uframe_no : INTEGER; utool_no : INTEGER) : STRING FROM strings
 -- Escapes quotes in a string
 ROUTINE esc_quotes(s : STRING)            : STRING FROM strings
 -- searches for a string "srchStr" within another 
@@ -90,6 +89,10 @@ ROUTINE strisint(s : STRING)               : BOOLEAN FROM strings
 ROUTINE s_to_i(s : STRING) 			        : INTEGER FROM strings
 --convert a string to real
 ROUTINE s_to_r(s : STRING) 			        : REAL FROM strings
+--convert a string to boolean
+ROUTINE s_to_b(s : STRING) 			        : BOOLEAN FROM strings
+--convert string to config
+ROUTINE s_to_config(conf_str : STRING)  : CONFIG FROM strings
 --convert binary string to a integer
 ROUTINE bin_to_i(s : STRING) : INTEGER FROM strings
 --convert integer to binary string
