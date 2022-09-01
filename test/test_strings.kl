@@ -31,8 +31,25 @@ ROUTINE t_extrat_str : BOOLEAN
            kunit_eq_str('two', extract_str(str_glob, ',', 2, 2)) AND
            kunit_eq_str('three', extract_str(str_glob, ',', 3,3)) AND 
            kunit_eq_str('one,two,three,four', extract_str(str_glob, ',', 1,4)) AND
-           kunit_eq_str('four,five,six,seven,eight', extract_str(str_glob, ',', 4,8)) )
+           kunit_eq_str('four,five,six,seven,eight', extract_str(str_glob, ',', 4,8)) AND
+           kunit_eq_str('ten', extract_str(str_glob, ',', 10,10)) )
   END t_extrat_str
+
+ROUTINE t_extrt_str2 : BOOLEAN
+  VAR
+    act_arr : ARRAY[4] OF INTEGER
+    exp_arr : ARRAY[4] OF INTEGER
+  BEGIN
+    str_glob = '1,2,3,4,5,8,7,6,9'
+
+    WRITE TPDISPLAY(extract_str(str_glob, ',', 6,9), CR)
+
+    s_to_iarr(extract_str(str_glob, ',', 6,9), ',', act_arr)
+    exp_arr[1] = 8 ; exp_arr[2] = 7 ; exp_arr[3] = 6 ; exp_arr[4] = 9 ;
+
+    RETURN(kunit_eq_int(9, s_to_i(extract_str(str_glob, ',', 9,9))) AND
+           kunit_eq_ari(exp_arr, act_arr) )
+  END t_extrt_str2
 
 ROUTINE t_rev_split : BOOLEAN
   VAR
@@ -389,10 +406,10 @@ ROUTINE t_dec2bin : BOOLEAN
 
 
 BEGIN
-  --total asserts 100
+  --total asserts 102
   kunit_test('split string', t_split_str) --asserts 4
   kunit_test('extract string', t_extrat_str) --asserts 4
-  t_splitStr
+  kunit_test('extract string int', t_extrt_str2) -- asserts 2
   kunit_test('reverse split string', t_rev_split) --asserts 5
   kunit_test('file path parsing', t_fnam_parse) -- assert 5
   kunit_test('char_count()', t_char_cnt) --asserts 5

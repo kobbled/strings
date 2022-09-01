@@ -92,8 +92,20 @@ ROUTINE extract_str
           s = j
         ENDIF
         --select end index
-        IF (count = stop_idx) OR (i=(STR_LEN(str)-STR_LEN(sep))) THEN
+        IF (count = stop_idx) THEN
           f = i
+          RETURN(SUB_STR(str, s, f-s))
+        ENDIF
+        IF (i=(STR_LEN(str)-STR_LEN(sep))) THEN
+          --due to counting method index is 1 less than
+          --than array size. if the last instance is 1 char
+          --it will not pick up this instance this if statement
+          --it a patch for this case
+          IF (start_idx = stop_idx) AND (count < start_idx) THEN
+            s = STR_LEN(str)-STR_LEN(sep)+1
+          ENDIF
+
+          f = STR_LEN(str)+1
           RETURN(SUB_STR(str, s, f-s))
         ENDIF
 
@@ -923,15 +935,18 @@ ROUTINE i_to_byte
 ROUTINE s_to_vec
   VAR
     v : VECTOR
-    i : INTEGER
     arr : ARRAY[3] OF REAL
   BEGIN
     s_to_rarr(s, delim, arr)
-    FOR i=1 TO ARRAY_LEN(arr) DO
-      v.x = arr[1]
-      v.y = arr[2]
-      v.z = arr[3]
-    ENDFOR
+
+    IF UNINIT(arr[2]) THEN
+      v.x = arr[1] ; v.y = 0 ; v.z = 0
+    ELSE IF UNINIT(arr[3]) THEN
+      v.x = arr[1] ; v.y = arr[2] ; v.z = 0
+    ELSE
+      v.x = arr[1] ; v.y = arr[2] ; v.z = arr[3]
+    ENDIF
+    ENDIF
 
     RETURN(v)
   END s_to_vec
