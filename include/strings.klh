@@ -17,6 +17,10 @@ ROUTINE extract_str(str:STRING; sep:STRING; start_idx, stop_idx : INTEGER) : STR
 -- split, search from the end to the start of the string
 ROUTINE rev_split(str:STRING; sep:STRING; out:ARRAY[*] OF STRING) FROM strings
 ROUTINE char_count(str:STRING; char:STRING) : INTEGER FROM strings
+ROUTINE char_index(str:STRING; char:STRING) : INTEGER FROM strings
+-- parse string to the next `char`
+ROUTINE takeStr(str:STRING; char:STRING) : STRING FROM strings
+ROUTINE takeNextStr(str:STRING; char:STRING) : STRING FROM strings
 --remove char from string
 ROUTINE remove_char(str:STRING; char:STRING) : STRING FROM strings
 --handle string overflow by splitting the string to a new line

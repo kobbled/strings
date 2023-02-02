@@ -404,9 +404,46 @@ ROUTINE t_dec2bin : BOOLEAN
            AND kunit_eq_str('101011', i_to_byte(53, TRUE)) AND kunit_eq_str('1011', i_to_byte(13, TRUE)) )
   END t_dec2bin
 
+ROUTINE t_charidx : BOOLEAN
+  BEGIN
+    RETURN(kunit_eq_int(6, char_index('abcdefghijk', 'f')) AND kunit_eq_int(1, char_index('abcdefghijk', 'a')) &
+           AND kunit_eq_int(11, char_index('abcdefghijk', 'k')) AND kunit_eq_int(2, char_index('abcdefghijk', 'b')) &
+           AND kunit_eq_int(10, char_index('hello my name is stacy', 'name')) )
+  END t_charidx
+
+ROUTINE t_take : BOOLEAN
+  VAR
+    str : STRING[30]
+    substr : STRING[5]
+    actual : ARRAY[6] OF BOOLEAN
+  BEGIN
+    str = 'hello my name is stacy'
+    
+    substr = takeStr(str, ' ')
+    actual[1] = kunit_eq_str(substr, 'hello')
+    str = takeNextStr(str, ' ')
+    actual[2] = kunit_eq_str(str, 'my name is stacy')
+
+    substr = takeStr(str, ' ')
+    actual[3] = kunit_eq_str(substr, 'my')
+    str = takeNextStr(str, ' ')
+    actual[4] = kunit_eq_str(str, 'name is stacy')
+
+    substr = takeStr(str, ' ')
+    actual[5] = kunit_eq_str(substr, 'name')
+    str = takeNextStr(str, ' ')
+    actual[6] = kunit_eq_str(str, 'is stacy')
+
+    WRITE(CR)
+    WRITE (str, CR)
+    WRITE (substr, CR)
+
+    RETURN(TRUE)
+  END t_take
+
 
 BEGIN
-  --total asserts 102
+  --total asserts 113
   kunit_test('split string', t_split_str) --asserts 4
   kunit_test('extract string', t_extrat_str) --asserts 4
   kunit_test('extract string int', t_extrt_str2) -- asserts 2
@@ -439,6 +476,8 @@ BEGIN
   kunit_test('str_parse()', t_strparse) --asserts 1
   kunit_test('binary string test', t_binary) --asserts 6
   kunit_test('decimal to binary', t_dec2bin) --asserts 6
+  kunit_test('char index', t_charidx) --asserts 4
+  kunit_test('take next string', t_take) --asserts 6
 
   kunit_done
 END test_strings

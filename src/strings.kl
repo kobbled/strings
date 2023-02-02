@@ -168,6 +168,41 @@ ROUTINE char_count
     RETURN(count)
   END char_count
 
+ROUTINE char_index
+  VAR
+    i   : INTEGER
+  BEGIN
+    FOR i = 1 TO (STR_LEN(str)-STR_LEN(char)+1) DO
+      IF (SUB_STR(str, i, STR_LEN(char))=char) THEN
+        RETURN(i)
+      ENDIF
+    ENDFOR
+
+    RETURN(0)
+  END char_index
+
+ROUTINE takeStr
+  VAR
+    i   : INTEGER
+  BEGIN
+    FOR i = 1 TO (STR_LEN(str)-STR_LEN(char)+1) DO
+      IF (SUB_STR(str, i, STR_LEN(char))=char) THEN
+        RETURN(SUB_STR(str, 1, i-1) )
+      ENDIF
+    ENDFOR
+  END takeStr
+
+ROUTINE takeNextStr
+  VAR
+    i   : INTEGER
+  BEGIN
+    FOR i = 1 TO (STR_LEN(str)-STR_LEN(char)+1) DO
+      IF (SUB_STR(str, i, STR_LEN(char))=char) THEN
+        RETURN(SUB_STR(str, i+STR_LEN(char), STR_LEN(str)) )
+      ENDIF
+    ENDFOR
+  END takeNextStr
+
 ROUTINE remove_char
   VAR
     i, j  : INTEGER
