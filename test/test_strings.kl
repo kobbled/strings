@@ -441,9 +441,25 @@ ROUTINE t_take : BOOLEAN
     RETURN(TRUE)
   END t_take
 
+ROUTINE t_upper : BOOLEAN
+  VAR
+    str : STRING[30]
+    str2 : STRING[30]
+  BEGIN
+    str = 'my name: stacy-junior'
+    str2 = 'MY NAME: STACY-JUNIOR'
+    RETURN(kunit_eq_str(str2, to_upper(str)))
+  END t_upper
+
+ROUTINE t_get_int : BOOLEAN
+  BEGIN
+    RETURN(kunit_eq_int(100, getIntInStr('CNT100')) AND kunit_eq_int(50, getIntInStr('50mm/s')) AND &
+           kunit_eq_int(50, getIntInStr('DO[50]')))
+  END t_get_int
+
 
 BEGIN
-  --total asserts 113
+  --total asserts 117
   kunit_test('split string', t_split_str) --asserts 4
   kunit_test('extract string', t_extrat_str) --asserts 4
   kunit_test('extract string int', t_extrt_str2) -- asserts 2
@@ -478,6 +494,8 @@ BEGIN
   kunit_test('decimal to binary', t_dec2bin) --asserts 6
   kunit_test('char index', t_charidx) --asserts 4
   kunit_test('take next string', t_take) --asserts 6
+  kunit_test('test upper string', t_upper) --asserts 1
+  kunit_test('get integer from string', t_get_int) --asserts 3
 
   kunit_done
 END test_strings

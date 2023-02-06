@@ -23,9 +23,13 @@ ROUTINE takeStr(str:STRING; char:STRING) : STRING FROM strings
 ROUTINE takeNextStr(str:STRING; char:STRING) : STRING FROM strings
 --remove char from string
 ROUTINE remove_char(str:STRING; char:STRING) : STRING FROM strings
+--convert string to uppercase
+ROUTINE to_upper(str:STRING) : STRING FROM strings
 --handle string overflow by splitting the string to a new line
 --if more than specified length
 ROUTINE str_parse(str:STRING ; max_length : INTEGER) : STRING FROM strings
+--get integer from a string
+ROUTINE getIntInStr(str:STRING) : INTEGER FROM strings
 --do delimeter sanity check
 ROUTINE delim_check(d :STRING) FROM strings
 ROUTINE delim_strip(s : STRING; delim : STRING) : STRING FROM strings

@@ -234,6 +234,30 @@ ROUTINE remove_char
     RETURN(new_str)
   END remove_char
 
+ROUTINE char_upper_(char : INTEGER) : STRING
+  BEGIN
+    IF (char > 96) AND (char < 123) THEN
+      RETURN(CHR(char-32))
+    ELSE
+      RETURN(CHR(char))
+    ENDIF
+  END char_upper_
+
+ROUTINE to_upper
+  VAR
+    i : INTEGER
+    char : INTEGER
+    out_str : STRING[64]
+  BEGIN
+    out_str = ''
+
+    FOR i=1 TO STR_LEN(str) DO
+      out_str = out_str + char_upper_(ORD(str, i))
+    ENDFOR
+
+    RETURN(out_str)
+  END to_upper
+
 ROUTINE str_parse
   VAR
     i,j : INTEGER
@@ -264,6 +288,34 @@ ROUTINE str_parse
     RETURN(new_str)
 
   END str_parse
+
+ROUTINE getIntInStr
+  VAR
+    i : INTEGER
+    started : BOOLEAN
+    int : INTEGER
+  BEGIN
+    int = 0
+    started = FALSE
+
+    --loop through string
+    FOR i = 1 TO STR_LEN(str) DO
+      --is the current char a number?
+      IF (ORD(str, i) > 47) AND (ORD(str, i) < 58) THEN
+        started = TRUE
+        --if so, add it to the int
+        int = int * 10 + (ORD(str, i) - 48)
+      ELSE
+        --if an integer has been found and the current char is not a number
+        --return the integer
+        IF started THEN
+          RETURN(int)
+        ENDIF
+      ENDIF
+    ENDFOR
+
+    RETURN(int)
+  END getIntInStr
 
 -- strip whitespace from left side of string
 ROUTINE lstrip
