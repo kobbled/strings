@@ -11,10 +11,19 @@
   "tests" : [
     "test/test_strings.kl"
   ],
+  "depends" : [
+    "errors",
+    "systemlib",
+    "TPElib",
+    "ktransw-macros"
+  ],
   "includes" : [
     "include"
   ],
   "tests-depends" : [
     "KUnit"
+  ],
+  "tp-interfaces" : [
+    {"routine" : "i_to_s", "program_name" : "str_i_to_s"}
   ]
 }
