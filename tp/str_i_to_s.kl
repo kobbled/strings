@@ -1,0 +1,17 @@
+PROGRAM str_i_to_s
+%NOBUSYLAMP
+%NOLOCKGROUP
+
+VAR
+	out_reg : INTEGER
+	i : INTEGER
+%include tpe.vars.klh
+%from registers.klh %import set_string
+%from pose.klh %import get_posreg_xyz, get_posreg_joint, set_posreg_xyz, set_posreg_joint, set_vector_to_posreg
+%from strings.klh %import i_to_s
+
+BEGIN
+	i = tpe__get_int_arg(1)
+	out_reg = tpe__get_int_arg(2)
+	registers__set_string(out_reg, i_to_s(i))
+END str_i_to_s
